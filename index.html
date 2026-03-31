@@ -178,6 +178,7 @@
 <div id="map-screen" class="screen">
   <div class="topbar">
     <div class="topbar-left">
+      <button class="icon-btn" onclick="goBackToMain()" style="flex-shrink:0">← Back</button>
       <div class="user-dot" id="my-dot"></div>
       <div style="min-width:0">
         <div style="display:flex;align-items:center;gap:4px">
@@ -191,6 +192,7 @@
       <button class="icon-btn" id="team-btn" onclick="toggleTeamPanel()">👥</button>
       <button class="icon-btn" id="boundary-btn" onclick="toggleDrawMode()">✏️ Zone</button>
       <button class="icon-btn danger" id="admin-btn" onclick="toggleAdminPanel()" style="display:none">⚙️</button>
+      <button class="icon-btn danger" onclick="logOut()">⏏ Out</button>
     </div>
   </div>
 
@@ -203,7 +205,11 @@
   </div>
 
   <div id="map"></div>
-  <div class="draw-hint" id="draw-hint">Tap map to draw zone • Tap Finish when done</div>
+  <div class="draw-hint" id="draw-hint">Tap map to add points to your zone</div>
+  <div id="draw-controls" style="display:none;position:absolute;top:110px;left:50%;transform:translateX(-50%);z-index:600;display:none;gap:0.5rem;flex-direction:row;">
+    <button onclick="undoLastPoint()" style="background:#fff;border:none;border-radius:10px;padding:0.45rem 0.85rem;font-size:0.8rem;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.15);color:#333">↩ Undo</button>
+    <button onclick="cancelDraw()" style="background:#fce8e6;border:none;border-radius:10px;padding:0.45rem 0.85rem;font-size:0.8rem;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.15);color:#d93025">✕ Cancel</button>
+  </div>
 
   <div class="legend" id="legend">
     <div class="legend-title">Legend</div>
@@ -219,6 +225,7 @@
     <div class="admin-panel-title">⚙️ Manage team</div>
     <div id="admin-list"></div>
     <button class="admin-clear" onclick="clearAllSessions()">🗑 Clear everyone & start fresh</button>
+    <button class="admin-clear" style="margin-top:0.4rem;background:#fff3cd;color:#856404" onclick="clearBoundary()">✏️ Erase & redraw zone</button>
   </div>
 
   <!-- STREET DONE MODAL -->
@@ -674,6 +681,7 @@ function toggleDrawMode(){
   if(isDrawMode){
     document.getElementById('boundary-btn').classList.add('active');
     document.getElementById('draw-hint').style.display='block';
+    document.getElementById('draw-controls').style.display='flex';
     mainBtn.className='main-btn done-draw';mainBtn.textContent='✓ Finish zone';mainBtn.onclick=finishBoundary;
     document.getElementById('mark-btn').disabled=true;
     boundaryPoints=[];boundaryMarkers.forEach(m=>map.removeLayer(m));boundaryMarkers=[];
@@ -685,10 +693,32 @@ function cancelDraw(){
   isDrawMode=false;
   document.getElementById('boundary-btn').classList.remove('active');
   document.getElementById('draw-hint').style.display='none';
+  document.getElementById('draw-controls').style.display='none';
+  // Clean up any in-progress points
+  boundaryMarkers.forEach(m=>map.removeLayer(m));boundaryMarkers=[];
+  if(boundaryLine){map.removeLayer(boundaryLine);boundaryLine=null;}
+  boundaryPoints=[];
   document.getElementById('main-btn').className='main-btn start';
   document.getElementById('main-btn').textContent='▶ Start';
   document.getElementById('main-btn').onclick=toggleTracking;
   document.getElementById('mark-btn').disabled=!isTracking;
+}
+function undoLastPoint(){
+  if(!boundaryPoints.length)return;
+  boundaryPoints.pop();
+  const lastMarker=boundaryMarkers.pop();
+  if(lastMarker)map.removeLayer(lastMarker);
+  if(boundaryLine)map.removeLayer(boundaryLine);
+  boundaryLine=null;
+  if(boundaryPoints.length>1)
+    boundaryLine=L.polyline([...boundaryPoints,boundaryPoints[0]],{color:'#fbbc04',weight:2.5,dashArray:'6 4',opacity:0.9}).addTo(map);
+  showToast('Last point removed');
+}
+async function clearBoundary(){
+  if(!confirm('Erase the current zone boundary so you can redraw it?'))return;
+  await sb.from('boundary').delete().eq('campaign_id',myCampaign.id);
+  if(boundaryPolygon){map.removeLayer(boundaryPolygon);boundaryPolygon=null;}
+  showToast('Zone cleared — tap ✏️ Zone to redraw');
 }
 function onMapClick(e){
   if(!isDrawMode)return;
@@ -736,6 +766,37 @@ function timeSince(date){
 function showScreen(id){
   document.querySelectorAll('.screen, #summary-screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+}
+
+async function goBackToMain(){
+  if(isTracking){
+    if(!confirm('You are still tracking. Going back will stop tracking. Continue?'))return;
+    stopTracking();
+  }
+  // Reset map state
+  if(map){map.remove();map=null;}
+  mySession=null;myColor=null;myName=null;myCampaign=null;
+  pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
+  boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];
+  sessions={};streetMarkerObjects={};
+  // Reload campaigns and go back
+  await loadCampaigns();
+  document.getElementById('join-btn').disabled=false;
+  document.getElementById('join-btn').textContent='Go to map →';
+  showScreen('campaign-screen');
+}
+
+async function logOut(){
+  if(isTracking){
+    if(!confirm('You are still tracking. Logging out will stop tracking. Continue?'))return;
+    stopTracking();
+  }
+  await sb.auth.signOut();
+  if(map){map.remove();map=null;}
+  mySession=null;myColor=null;myName=null;myCampaign=null;myUser=null;
+  pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
+  sessions={};streetMarkerObjects={};
+  showScreen('auth-screen');
 }
 function showEl(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
