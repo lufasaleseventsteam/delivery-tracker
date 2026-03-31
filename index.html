@@ -11,16 +11,13 @@
   .screen { display: none; flex-direction: column; height: 100dvh; align-items: center; justify-content: center; padding: 2rem; background: #fff; }
   .screen.active { display: flex; }
   #map-screen { padding: 0; }
-
-  /* AUTH */
   .auth-logo { width: 140px; height: 140px; object-fit: contain; margin-bottom: 1.25rem; }
   .auth-title { font-size: 1.3rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem; text-align: center; }
   .auth-sub { font-size: 0.9rem; color: #666; margin-bottom: 2rem; text-align: center; }
   .google-btn { display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.5rem; background: #fff; border: 1.5px solid #ddd; border-radius: 12px; font-size: 0.95rem; font-weight: 600; color: #333; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.08); width: 100%; max-width: 300px; justify-content: center; }
   .google-icon { width: 20px; height: 20px; }
   .auth-note { font-size: 0.78rem; color: #999; margin-top: 1.25rem; text-align: center; max-width: 260px; }
-
-  /* NAME */
+  .error-msg { color: #ea4335; font-size: 0.85rem; text-align: center; margin-top: 0.5rem; display: none; }
   .name-logo { width: 90px; height: 90px; object-fit: contain; margin-bottom: 1rem; }
   .name-title { font-size: 1.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem; }
   .name-sub { font-size: 0.88rem; color: #666; margin-bottom: 1.5rem; text-align: center; }
@@ -30,8 +27,6 @@
   .name-btn { padding: 0.85rem; background: #4d8c3f; color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; }
   .name-btn:disabled { background: #aaa; }
   .signed-in-as { font-size: 0.8rem; color: #888; margin-bottom: 1rem; text-align: center; }
-
-  /* MAP */
   #map-screen { position: relative; }
   #map { flex: 1; width: 100%; }
   .topbar { background: #fff; padding: 0.6rem 1rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,0.1); z-index: 1000; flex-shrink: 0; width: 100%; }
@@ -42,12 +37,25 @@
   .topbar-right { display: flex; gap: 0.5rem; }
   .icon-btn { background: #f0f0f0; border: none; border-radius: 8px; padding: 0.4rem 0.7rem; font-size: 0.8rem; cursor: pointer; color: #333; font-weight: 500; }
   .icon-btn.active { background: #e8f0fe; color: #4285f4; }
-  .bottombar { background: #fff; padding: 0.75rem 1rem; box-shadow: 0 -1px 4px rgba(0,0,0,0.1); z-index: 1000; flex-shrink: 0; width: 100%; }
-  .main-btn { width: 100%; padding: 0.9rem; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; }
+  .bottombar { background: #fff; padding: 0.75rem 1rem; box-shadow: 0 -1px 4px rgba(0,0,0,0.1); z-index: 1000; flex-shrink: 0; width: 100%; display: flex; gap: 0.5rem; }
+  .main-btn { flex: 1; padding: 0.9rem; border: none; border-radius: 14px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
   .main-btn.start { background: #4d8c3f; color: #fff; }
   .main-btn.stop { background: #ea4335; color: #fff; }
   .main-btn.done-draw { background: #4285f4; color: #fff; }
-  .legend { position: absolute; bottom: 80px; left: 10px; background: rgba(255,255,255,0.95); border-radius: 10px; padding: 0.6rem 0.8rem; z-index: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-width: 180px; }
+  .mark-btn { flex: 0 0 auto; padding: 0.9rem 1rem; border-radius: 14px; font-size: 0.85rem; font-weight: 700; cursor: pointer; background: #fff3cd; color: #856404; border: 1.5px solid #ffc107; white-space: nowrap; }
+  .mark-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.45); z-index: 800; display: none; align-items: flex-end; justify-content: center; }
+  .modal-overlay.visible { display: flex; }
+  .modal { background: #fff; border-radius: 20px 20px 0 0; padding: 1.5rem; width: 100%; max-width: 500px; }
+  .modal-title { font-size: 1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem; }
+  .modal-sub { font-size: 0.85rem; color: #666; margin-bottom: 1rem; }
+  .modal input { width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #ddd; border-radius: 12px; font-size: 1rem; outline: none; margin-bottom: 0.75rem; }
+  .modal input:focus { border-color: #4d8c3f; }
+  .modal-btns { display: flex; gap: 0.5rem; }
+  .modal-btns button { flex: 1; padding: 0.85rem; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+  .modal-cancel { background: #f0f0f0; color: #333; }
+  .modal-confirm { background: #4d8c3f; color: #fff; }
+  .legend { position: absolute; bottom: 90px; left: 10px; background: rgba(255,255,255,0.95); border-radius: 10px; padding: 0.6rem 0.8rem; z-index: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-width: 180px; }
   .legend-title { font-size: 0.7rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
   .legend-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
   .legend-line { width: 20px; height: 3px; border-radius: 2px; }
@@ -62,7 +70,6 @@
   .member-time { font-size: 0.7rem; color: #999; }
   .toast { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.85rem; z-index: 700; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
   .toast.show { opacity: 1; }
-  .error-msg { color: #ea4335; font-size: 0.85rem; text-align: center; margin-top: 0.5rem; display: none; }
 </style>
 </head>
 <body>
@@ -95,6 +102,7 @@
     <input type="text" id="name-input" placeholder="e.g. Marie, Alex..." maxlength="20" autocomplete="off"/>
     <button class="name-btn" id="name-btn" onclick="submitName()">Go to map →</button>
   </div>
+  <div class="error-msg" id="name-error"></div>
 </div>
 
 <!-- MAP SCREEN -->
@@ -109,22 +117,34 @@
     </div>
     <div class="topbar-right">
       <button class="icon-btn" id="team-btn" onclick="toggleTeamPanel()">👥 Team</button>
-      <button class="icon-btn" id="boundary-btn" onclick="toggleDrawMode()">✏️ Boundary</button>
+      <button class="icon-btn" id="boundary-btn" onclick="toggleDrawMode()">✏️ Zone</button>
     </div>
   </div>
   <div id="map"></div>
-  <div class="draw-hint" id="draw-hint">Tap map to draw boundary • Tap Finish when done</div>
+  <div class="draw-hint" id="draw-hint">Tap map to draw zone • Tap Finish when done</div>
   <div class="legend" id="legend">
-    <div class="legend-title">Covered streets</div>
+    <div class="legend-title">Legend</div>
     <div id="legend-items"></div>
   </div>
   <div class="team-panel" id="team-panel">
     <div class="team-panel-title">Team online</div>
     <div id="team-list"></div>
   </div>
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-title">✅ Mark street as done</div>
+      <div class="modal-sub">Both sides completed? Enter the street name.</div>
+      <input type="text" id="street-input" placeholder="e.g. Rue Saint-Denis" autocomplete="off"/>
+      <div class="modal-btns">
+        <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+        <button class="modal-confirm" onclick="confirmStreetDone()">Mark as done</button>
+      </div>
+    </div>
+  </div>
   <div class="toast" id="toast"></div>
   <div class="bottombar">
-    <button class="main-btn start" id="main-btn" onclick="toggleTracking()">▶ Start tracking my route</button>
+    <button class="main-btn start" id="main-btn" onclick="toggleTracking()">▶ Start tracking</button>
+    <button class="mark-btn" id="mark-btn" onclick="openModal()" disabled>✅ Street done</button>
   </div>
 </div>
 
@@ -139,126 +159,153 @@ const COLORS = ['#4285f4','#ea4335','#34a853','#fbbc04','#9c27b0','#00bcd4','#ff
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let map, mySession = null, myColor = null, myName = null, myUser = null;
-let isTracking = false, watchId = null;
-let polylines = {}, markers = {}, myPolyline = null, myPoints = [];
-let isDrawMode = false, boundaryPoints = [], boundaryLine = null, boundaryPolygon = null;
-let boundaryMarkers = [], teamPanelVisible = false, sessions = {};
+let map, mySession=null, myColor=null, myName=null, myUser=null;
+let isTracking=false, watchId=null, lastPos=null;
+let pathPolylines={}, locationPoints={}, markers={}, myPolyline=null, myPoints=[];
+let isDrawMode=false, boundaryPoints=[], boundaryLine=null, boundaryPolygon=null, boundaryMarkers=[];
+let teamPanelVisible=false, sessions={}, streetMarkerObjects={};
 
 // ── AUTH ──────────────────────────────────────────────
 async function signInWithGoogle() {
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: {
-      redirectTo: 'https://lufasaleseventsteam.github.io/delivery-tracker'
-    }
+    options: { redirectTo: 'https://lufasaleseventsteam.github.io/delivery-tracker' }
   });
   if (error) showAuthError('Sign-in error: ' + error.message);
 }
 
 async function checkAuth() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) { showScreen('auth-screen'); return; }
-
-  const email = session.user.email || '';
-  if (!email.endsWith('@' + ALLOWED_DOMAIN)) {
-    await sb.auth.signOut();
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { showScreen('auth-screen'); return; }
+    const email = session.user.email || '';
+    if (!email.endsWith('@' + ALLOWED_DOMAIN)) {
+      await sb.auth.signOut();
+      showScreen('auth-screen');
+      showAuthError('Only @lufa.com accounts are allowed.');
+      return;
+    }
+    myUser = session.user;
+    const displayName = session.user.user_metadata?.full_name || email.split('@')[0];
+    document.getElementById('signed-in-as').textContent = 'Signed in as ' + email;
+    document.getElementById('name-input').value = displayName.split(' ')[0];
+    showScreen('name-screen');
+  } catch(e) {
     showScreen('auth-screen');
-    showAuthError('Only @lufa.com accounts are allowed. Please use your work email.');
-    return;
   }
-
-  myUser = session.user;
-  const displayName = session.user.user_metadata?.full_name || email.split('@')[0];
-  document.getElementById('signed-in-as').textContent = 'Signed in as ' + email;
-  document.getElementById('name-input').value = displayName.split(' ')[0];
-  showScreen('name-screen');
 }
 
 function showAuthError(msg) {
   const el = document.getElementById('auth-error');
-  el.textContent = msg;
-  el.style.display = 'block';
+  el.textContent = msg; el.style.display = 'block';
 }
 
 // ── NAME ─────────────────────────────────────────────
 async function submitName() {
   const name = document.getElementById('name-input').value.trim();
-  if (!name) { showToast('Please enter a name'); return; }
+  if (!name) { showNameError('Please enter a name'); return; }
   const btn = document.getElementById('name-btn');
   btn.disabled = true; btn.textContent = 'Loading...';
 
-  const { data: existing } = await sb.from('sessions').select('color');
-  const usedColors = (existing || []).map(s => s.color);
-  const color = COLORS.find(c => !usedColors.includes(c)) || COLORS[Math.floor(Math.random() * COLORS.length)];
+  try {
+    const { data: existing } = await sb.from('sessions').select('color');
+    const usedColors = (existing || []).map(s => s.color);
+    const color = COLORS.find(c => !usedColors.includes(c)) || COLORS[Math.floor(Math.random() * COLORS.length)];
 
-  const { data, error } = await sb.from('sessions').insert({ name, color, user_id: myUser.id }).select().single();
-  if (error) { showToast('Error: ' + error.message); btn.disabled = false; btn.textContent = 'Go to map →'; return; }
+    // Insert without user_id to avoid schema issues
+    const { data, error } = await sb.from('sessions')
+      .insert({ name, color })
+      .select()
+      .single();
 
-  mySession = data.id; myColor = color; myName = name;
-  document.getElementById('my-dot').style.background = myColor;
-  document.getElementById('topbar-name').textContent = name;
-  showScreen('map-screen');
-  initMap();
+    if (error) {
+      showNameError('Error: ' + error.message);
+      btn.disabled = false; btn.textContent = 'Go to map →';
+      return;
+    }
+
+    mySession = data.id; myColor = color; myName = name;
+    document.getElementById('my-dot').style.background = myColor;
+    document.getElementById('topbar-name').textContent = name;
+    showScreen('map-screen');
+    initMap();
+  } catch(e) {
+    showNameError('Unexpected error: ' + e.message);
+    btn.disabled = false; btn.textContent = 'Go to map →';
+  }
+}
+
+function showNameError(msg) {
+  const el = document.getElementById('name-error');
+  el.textContent = msg; el.style.display = 'block';
 }
 
 // ── MAP ───────────────────────────────────────────────
 function initMap() {
   map = L.map('map', { zoomControl: false }).setView([45.5017, -73.5673], 14);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap', maxZoom: 19
-  }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }).addTo(map);
   L.control.zoom({ position: 'bottomright' }).addTo(map);
   map.on('click', onMapClick);
   loadExistingData();
   subscribeRealtime();
-  setInterval(() => {
-    if (mySession) sb.from('sessions').update({ last_seen: new Date().toISOString() }).eq('id', mySession);
-  }, 30000);
+  setInterval(() => { if (mySession) sb.from('sessions').update({ last_seen: new Date().toISOString() }).eq('id', mySession); }, 30000);
 }
 
 async function loadExistingData() {
-  const { data: bounds } = await sb.from('boundary').select('*').order('created_at', { ascending: false }).limit(1);
-  if (bounds && bounds.length > 0) drawBoundaryFromPoints(bounds[0].points);
+  try {
+    const { data: bounds } = await sb.from('boundary').select('*').order('created_at', { ascending: false }).limit(1);
+    if (bounds && bounds.length > 0) drawBoundaryFromPoints(bounds[0].points);
 
-  const { data: sess } = await sb.from('sessions').select('*');
-  if (sess) sess.forEach(s => { sessions[s.id] = s; });
+    const { data: sess } = await sb.from('sessions').select('*');
+    if (sess) sess.forEach(s => { if (s.id !== mySession) sessions[s.id] = s; });
 
-  const { data: locs } = await sb.from('locations').select('*').order('recorded_at', { ascending: true });
-  if (locs && sess) {
-    const bySession = {};
-    locs.forEach(l => { if (!bySession[l.session_id]) bySession[l.session_id] = []; bySession[l.session_id].push([l.lat, l.lng]); });
-    Object.entries(bySession).forEach(([sid, pts]) => {
-      const s = sess.find(s => s.id === sid);
-      if (s) { polylines[sid] = pts; drawPath(sid, pts, s.color); }
-    });
-  }
-  updateTeamPanel(); updateLegend();
+    const { data: locs } = await sb.from('locations').select('*').order('recorded_at', { ascending: true });
+    if (locs) {
+      const bySession = {};
+      locs.forEach(l => { if (!bySession[l.session_id]) bySession[l.session_id] = []; bySession[l.session_id].push([l.lat, l.lng]); });
+      Object.entries(bySession).forEach(([sid, pts]) => {
+        const s = sid === mySession ? { color: myColor } : sessions[sid];
+        if (s) { locationPoints[sid] = pts; drawPath(sid, pts, s.color); }
+      });
+    }
+
+    const { data: sm } = await sb.from('street_markers').select('*');
+    if (sm) sm.forEach(m => placeStreetMarker(m));
+
+    updateTeamPanel(); updateLegend();
+  } catch(e) { console.error('Load error:', e); }
 }
 
 function subscribeRealtime() {
-  sb.channel('locations-channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'locations' }, payload => {
+  sb.channel('loc-ch').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'locations' }, payload => {
     const loc = payload.new;
     if (loc.session_id === mySession) return;
     const s = sessions[loc.session_id];
     if (!s) return;
-    if (!Array.isArray(polylines[loc.session_id])) polylines[loc.session_id] = [];
-    polylines[loc.session_id].push([loc.lat, loc.lng]);
-    drawPath(loc.session_id, polylines[loc.session_id], s.color);
+    if (!Array.isArray(locationPoints[loc.session_id])) locationPoints[loc.session_id] = [];
+    locationPoints[loc.session_id].push([loc.lat, loc.lng]);
+    drawPath(loc.session_id, locationPoints[loc.session_id], s.color);
     updateMarker(loc.session_id, loc.lat, loc.lng, s.color, s.name);
   }).subscribe();
 
-  sb.channel('sessions-channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sessions' }, payload => {
-    const s = payload.new; sessions[s.id] = s;
-    updateTeamPanel(); updateLegend();
+  sb.channel('sess-ch').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sessions' }, payload => {
+    const s = payload.new;
+    if (s.id === mySession) return;
+    sessions[s.id] = s; updateTeamPanel(); updateLegend();
     showToast(s.name + ' joined the map');
   }).on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sessions' }, payload => {
-    sessions[payload.new.id] = payload.new; updateTeamPanel();
+    if (payload.new.id !== mySession) { sessions[payload.new.id] = payload.new; updateTeamPanel(); }
   }).subscribe();
 
-  sb.channel('boundary-channel').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'boundary' }, payload => {
-    drawBoundaryFromPoints(payload.new.points);
-    showToast('Territory boundary updated');
+  sb.channel('bound-ch').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'boundary' }, payload => {
+    drawBoundaryFromPoints(payload.new.points); showToast('Zone boundary updated');
+  }).subscribe();
+
+  sb.channel('marker-ch').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'street_markers' }, payload => {
+    placeStreetMarker(payload.new);
+    showToast('✅ ' + payload.new.street_name + ' marked done by ' + payload.new.added_by);
+  }).on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'street_markers' }, payload => {
+    removeStreetMarkerFromMap(payload.old.id);
   }).subscribe();
 }
 
@@ -272,10 +319,13 @@ function startTracking() {
   if (!navigator.geolocation) { showToast('Geolocation not supported'); return; }
   isTracking = true; myPoints = [];
   document.getElementById('main-btn').className = 'main-btn stop';
-  document.getElementById('main-btn').textContent = '⏹ Stop tracking';
+  document.getElementById('main-btn').textContent = '⏹ Stop';
   document.getElementById('topbar-status').textContent = 'Tracking your route…';
+  document.getElementById('mark-btn').disabled = false;
+
   watchId = navigator.geolocation.watchPosition(async pos => {
     const { latitude: lat, longitude: lng } = pos.coords;
+    lastPos = { lat, lng };
     myPoints.push([lat, lng]);
     if (myPolyline) map.removeLayer(myPolyline);
     myPolyline = L.polyline(myPoints, { color: myColor, weight: 5, opacity: 0.85 }).addTo(map);
@@ -290,14 +340,15 @@ function stopTracking() {
   isTracking = false;
   if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
   document.getElementById('main-btn').className = 'main-btn start';
-  document.getElementById('main-btn').textContent = '▶ Start tracking my route';
+  document.getElementById('main-btn').textContent = '▶ Start tracking';
   document.getElementById('topbar-status').textContent = 'Tracking stopped';
+  document.getElementById('mark-btn').disabled = true;
   showToast('Route saved!');
 }
 
 function drawPath(sid, points, color) {
-  if (polylines[sid] && polylines[sid]._leaflet_id) map.removeLayer(polylines[sid]);
-  if (points.length > 1) polylines[sid] = L.polyline(points, { color, weight: 5, opacity: 0.8 }).addTo(map);
+  if (pathPolylines[sid]) map.removeLayer(pathPolylines[sid]);
+  if (points.length > 1) pathPolylines[sid] = L.polyline(points, { color, weight: 5, opacity: 0.8 }).addTo(map);
 }
 
 function updateMarker(sid, lat, lng, color, name) {
@@ -305,23 +356,67 @@ function updateMarker(sid, lat, lng, color, name) {
   const icon = L.divIcon({
     className: '',
     html: '<div style="background:' + color + ';width:14px;height:14px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>',
-    iconSize: [14, 14], iconAnchor: [7, 7]
+    iconSize: [14,14], iconAnchor: [7,7]
   });
   markers[sid] = L.marker([lat, lng], { icon }).bindTooltip(name, { permanent: false, direction: 'top' }).addTo(map);
+}
+
+// ── STREET MODAL ──────────────────────────────────────
+function openModal() {
+  document.getElementById('street-input').value = '';
+  document.getElementById('modal-overlay').classList.add('visible');
+  setTimeout(() => document.getElementById('street-input').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('visible');
+}
+
+async function confirmStreetDone() {
+  const streetName = document.getElementById('street-input').value.trim();
+  if (!streetName) { showToast('Please enter a street name'); return; }
+  const pos = lastPos || { lat: map.getCenter().lat, lng: map.getCenter().lng };
+  const { error } = await sb.from('street_markers').insert({
+    street_name: streetName, lat: pos.lat, lng: pos.lng, added_by: myName, color: myColor
+  });
+  if (error) { showToast('Error: ' + error.message); return; }
+  closeModal();
+}
+
+function placeStreetMarker(m) {
+  const icon = L.divIcon({
+    className: '',
+    html: '<div style="background:#fff;border:2.5px solid ' + m.color + ';border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.25)">✅</div>',
+    iconSize: [28,28], iconAnchor: [14,14]
+  });
+  const marker = L.marker([m.lat, m.lng], { icon })
+    .bindPopup('<div style="font-family:sans-serif;min-width:150px"><div style="font-weight:700;font-size:0.95rem;margin-bottom:4px">' + m.street_name + '</div><div style="font-size:0.8rem;color:#666;margin-bottom:8px">Done by ' + m.added_by + '</div><button onclick="deleteStreetMarker(\'' + m.id + '\')" style="background:#fce8e6;color:#d93025;border:none;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%">Remove marker</button></div>')
+    .addTo(map);
+  streetMarkerObjects[m.id] = marker;
+}
+
+async function deleteStreetMarker(id) {
+  map.closePopup();
+  await sb.from('street_markers').delete().eq('id', id);
+  removeStreetMarkerFromMap(id);
+}
+
+function removeStreetMarkerFromMap(id) {
+  if (streetMarkerObjects[id]) { map.removeLayer(streetMarkerObjects[id]); delete streetMarkerObjects[id]; }
 }
 
 // ── BOUNDARY ─────────────────────────────────────────
 function toggleDrawMode() {
   if (isTracking) { showToast('Stop tracking first'); return; }
   isDrawMode = !isDrawMode;
-  const hint = document.getElementById('draw-hint');
-  const btn = document.getElementById('boundary-btn');
   const mainBtn = document.getElementById('main-btn');
   if (isDrawMode) {
-    btn.classList.add('active'); hint.style.display = 'block';
+    document.getElementById('boundary-btn').classList.add('active');
+    document.getElementById('draw-hint').style.display = 'block';
     mainBtn.className = 'main-btn done-draw';
-    mainBtn.textContent = '✓ Finish boundary';
+    mainBtn.textContent = '✓ Finish zone';
     mainBtn.onclick = finishBoundary;
+    document.getElementById('mark-btn').disabled = true;
     boundaryPoints = [];
     boundaryMarkers.forEach(m => map.removeLayer(m)); boundaryMarkers = [];
     if (boundaryLine) { map.removeLayer(boundaryLine); boundaryLine = null; }
@@ -334,8 +429,9 @@ function cancelDraw() {
   document.getElementById('boundary-btn').classList.remove('active');
   document.getElementById('draw-hint').style.display = 'none';
   document.getElementById('main-btn').className = 'main-btn start';
-  document.getElementById('main-btn').textContent = '▶ Start tracking my route';
+  document.getElementById('main-btn').textContent = '▶ Start tracking';
   document.getElementById('main-btn').onclick = toggleTracking;
+  document.getElementById('mark-btn').disabled = !isTracking;
 }
 
 function onMapClick(e) {
@@ -356,7 +452,7 @@ async function finishBoundary() {
   await sb.from('boundary').insert({ points: boundaryPoints });
   drawBoundaryFromPoints(boundaryPoints);
   cancelDraw();
-  showToast('Boundary saved for the whole team!');
+  showToast('Zone saved for the whole team!');
 }
 
 function drawBoundaryFromPoints(points) {
@@ -368,10 +464,10 @@ function drawBoundaryFromPoints(points) {
 // ── LEGEND & TEAM ─────────────────────────────────────
 function updateLegend() {
   const el = document.getElementById('legend-items');
-  const all = [{ id: mySession, name: myName, color: myColor }, ...Object.values(sessions).filter(s => s.id !== mySession)];
+  const all = [{ id: mySession, name: myName, color: myColor }, ...Object.values(sessions)];
   el.innerHTML = all.filter(s => s && s.name).map(s =>
     '<div class="legend-item"><div class="legend-line" style="background:' + s.color + '"></div><div class="legend-name">' + s.name + '</div></div>'
-  ).join('');
+  ).join('') + '<div class="legend-item" style="margin-top:4px"><span style="font-size:12px">✅</span><div class="legend-name" style="margin-left:2px">Street done</div></div>';
 }
 
 function toggleTeamPanel() {
@@ -382,7 +478,7 @@ function toggleTeamPanel() {
 
 function updateTeamPanel() {
   const el = document.getElementById('team-list');
-  const all = [{ id: mySession, name: myName, color: myColor, last_seen: new Date().toISOString() }, ...Object.values(sessions).filter(s => s.id !== mySession)];
+  const all = [{ id: mySession, name: myName, color: myColor, last_seen: new Date().toISOString() }, ...Object.values(sessions)];
   el.innerHTML = all.filter(s => s && s.name).map(s => {
     const ago = s.last_seen ? timeSince(new Date(s.last_seen)) : '';
     return '<div class="team-member"><div class="member-dot" style="background:' + s.color + '"></div><div><div class="member-name">' + s.name + (s.id === mySession ? ' (you)' : '') + '</div><div class="member-time">' + ago + '</div></div></div>';
@@ -408,6 +504,7 @@ function showToast(msg) {
 }
 
 document.getElementById('name-input').addEventListener('keydown', e => { if (e.key === 'Enter') submitName(); });
+document.getElementById('street-input').addEventListener('keydown', e => { if (e.key === 'Enter') confirmStreetDone(); });
 
 checkAuth();
 </script>
