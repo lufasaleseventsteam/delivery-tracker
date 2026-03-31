@@ -135,13 +135,77 @@
   .member-time { font-size: 0.7rem; color: #999; }
   .toast { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.85rem; z-index: 900; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
   .toast.show { opacity: 1; }
+
+  /* DARK MODE */
+  body.dark { background: #1a1a1a; }
+  body.dark .screen { background: #1e1e1e; }
+  body.dark .screen-title, body.dark .topbar-name, body.dark .bag-counter-val, body.dark .stat-val, body.dark .modal-title { color: #f0f0f0; }
+  body.dark .screen-sub, body.dark .topbar-status, body.dark .signed-in-as, body.dark .auth-note, body.dark .form-label, body.dark .modal-sub, body.dark .stat-sub, body.dark .member-time { color: #999; }
+  body.dark .topbar, body.dark .bottombar { background: #252525; box-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+  body.dark .icon-btn { background: #333; color: #ccc; }
+  body.dark .icon-btn.active { background: #1a3a6b; color: #7aadff; }
+  body.dark .icon-btn.danger { background: #3d1a1a; color: #ff7070; }
+  body.dark .search-input { background: #2a2a2a; color: #f0f0f0; }
+  body.dark .search-results { background: #2a2a2a; }
+  body.dark .search-result-item { color: #ccc; border-bottom-color: #333; }
+  body.dark .search-result-item:hover { background: #333; }
+  body.dark .locate-btn { background: #2a2a2a; }
+  body.dark .modal { background: #252525; }
+  body.dark .modal input { background: #2a2a2a; border-color: #444; color: #f0f0f0; }
+  body.dark .modal-cancel { background: #333; color: #ccc; }
+  body.dark .mark-btn { background: #3d3000; color: #ffd54f; border-color: #7a5f00; }
+  body.dark .summary-card { background: #252525; }
+  body.dark .summary-card-title { color: #888; }
+  body.dark .stat-name { color: #ccc; }
+  body.dark .stat-row { border-bottom-color: #333; }
+  body.dark .street-tag { background: #1a2e1a; color: #7ec87e; }
+  body.dark .street-bags { color: #888; }
+  body.dark #summary-screen { background: #1a1a1a; }
+  body.dark .legend, body.dark .team-panel, body.dark .admin-panel { background: #252525; }
+  body.dark .legend-name, body.dark .member-name, body.dark .admin-name { color: #ccc; }
+  body.dark .legend-title, body.dark .team-panel-title, body.dark .admin-panel-title { color: #777; }
+  body.dark .admin-member { border-bottom-color: #333; }
+  body.dark .google-btn { background: #252525; border-color: #444; color: #ccc; }
+  body.dark .form-block input { background: #2a2a2a; border-color: #444; color: #f0f0f0; }
+  body.dark .campaign-item { border-color: #444; }
+  body.dark .campaign-item-name { color: #f0f0f0; }
+  body.dark .campaign-item:hover, body.dark .campaign-item.selected { background: #1a2e1a; border-color: #4d8c3f; }
+  body.dark .or-divider { color: #666; }
+  body.dark #history-screen { background: #1e1e1e; }
+  body.dark #incident-modal-overlay .modal { background: #252525; }
+  body.dark #incident-note { background: #2a2a2a; border-color: #444; color: #f0f0f0; }
+  body.dark #history-list > div { background: #252525 !important; color: #f0f0f0; }
+  body.dark #street-autocomplete { background: #2a2a2a; }
+  body.dark #street-autocomplete > div { color: #ccc; border-bottom-color: #333; }
+  body.dark #street-autocomplete > div:hover { background: #333; }
+  body.dark .bag-counter-btn { background: #333; border-color: #555; color: #f0f0f0; }
+  body.dark .bag-counter-label { color: #999; }
+  body.dark .topbar-campaign { color: #7ec87e; }
+
+  /* LOADING OVERLAY */
+  .map-loading { position:absolute;inset:0;background:rgba(255,255,255,0.85);z-index:1200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem; }
+  .map-loading-spinner { width:36px;height:36px;border:4px solid #e0e0e0;border-top-color:#4d8c3f;border-radius:50%;animation:spin 0.8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .map-loading-text { font-size:0.9rem;color:#555;font-weight:600; }
+  body.dark .map-loading { background:rgba(30,30,30,0.88); }
+  body.dark .map-loading-text { color:#aaa; }
+
+  /* ECO BTN ACTIVE STATE */
+  #eco-btn.eco-active { background:#1b4d1b;color:#a5d6a7; }
+  body.dark #eco-btn { background:#1a2e1a;color:#7ec87e; }
+  body.dark #eco-btn.eco-active { background:#0d1f0d;color:#a5d6a7; }
+
+  /* INCIDENT MODAL IMAGE PREVIEW */
+  #incident-preview { width:100%;max-height:140px;object-fit:cover;border-radius:10px;margin-bottom:0.75rem;display:none; }
+  body.dark #incident-preview { border:1px solid #444; }
+  body.dark .incident-note { background:#2a2a2a;color:#ccc; }
 </style>
 </head>
 <body>
 
 <!-- AUTH SCREEN -->
 <div id="auth-screen" class="screen active">
-  
+  <img class="logo" style="width:90px;height:90px" src="logo_lufa_grand.jpeg" onerror="this.style.display='none'" alt="Les Fermes Lufa"/>
   <div class="screen-title">Gift Drop Tracking</div>
   <div class="screen-sub">Sign in with your Lufa Google account</div>
   <button class="google-btn" onclick="signInWithGoogle()">
@@ -159,7 +223,7 @@
 
 <!-- CAMPAIGN SCREEN -->
 <div id="campaign-screen" class="screen">
-  <img class="logo" style="width:80px;height:80px" src="logo_lufa_grand.jpeg" alt="Les Fermes Lufa"/>
+  <img class="logo" style="width:80px;height:80px" src="logo_lufa_grand.jpeg" onerror="this.style.display='none'" alt="Les Fermes Lufa"/>
   <div class="screen-title" style="font-size:1.1rem;margin-bottom:0.15rem">Select or create a campaign</div>
   <div class="signed-in-as" id="signed-in-as"></div>
   <div class="campaign-list" id="campaign-list"></div>
@@ -169,10 +233,25 @@
     <input type="text" id="campaign-input" placeholder="e.g. Rosemont Week 1" maxlength="40" autocomplete="off"/>
     <div class="form-label">Your name <span style="font-weight:400;color:#aaa">(pre-filled from Google)</span></div>
     <input type="text" id="name-input" placeholder="Your name" maxlength="20" autocomplete="off"/>
+    <div class="form-label">Bag target <span style="font-weight:400;color:#aaa">(optional, default 1600)</span></div>
+    <input type="number" id="bag-target-input" placeholder="1600" min="1" max="99999" autocomplete="off"/>
     <button class="green-btn" id="join-btn" onclick="submitCampaign()">Go to map →</button>
   </div>
   <div class="error-msg" id="name-error"></div>
-  <button onclick="logOut()" style="margin-top:1.25rem;padding:0.65rem 1.5rem;background:#f0f0f0;border:none;border-radius:12px;font-size:0.85rem;font-weight:600;color:#666;cursor:pointer;width:100%;max-width:300px;">⏏ Sign out</button>
+  <button onclick="showHistory()" style="margin-top:0.5rem;padding:0.65rem 1.5rem;background:#f0f7ee;border:none;border-radius:12px;font-size:0.85rem;font-weight:600;color:#4d8c3f;cursor:pointer;width:100%;max-width:300px;">📋 Campaign history</button>
+  <button onclick="logOut()" style="margin-top:0.5rem;padding:0.65rem 1.5rem;background:#f0f0f0;border:none;border-radius:12px;font-size:0.85rem;font-weight:600;color:#666;cursor:pointer;width:100%;max-width:300px;">⏏ Sign out</button>
+</div>
+
+
+<!-- HISTORY SCREEN -->
+<div id="history-screen" class="screen" style="align-items:stretch;padding:0;justify-content:flex-start;">
+  <div style="background:#4d8c3f;color:#fff;padding:1rem 1rem 0.75rem;display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
+    <button onclick="showScreen('campaign-screen')" style="background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:8px;padding:0.4rem 0.75rem;font-size:0.85rem;font-weight:600;cursor:pointer;">← Back</button>
+    <div style="font-size:1.1rem;font-weight:700;">📋 Campaign History</div>
+  </div>
+  <div id="history-list" style="flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:0.75rem;">
+    <div style="color:#999;font-size:0.9rem;text-align:center;margin-top:2rem;">Loading…</div>
+  </div>
 </div>
 
 <!-- MAP SCREEN -->
@@ -190,6 +269,7 @@
       </div>
     </div>
     <div class="topbar-right">
+      <button class="icon-btn" id="dark-btn" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
       <button class="icon-btn" id="team-btn" onclick="toggleTeamPanel()">👥</button>
       <button class="icon-btn" id="boundary-btn" onclick="toggleDrawMode()">✏️ Zone</button>
       <button class="icon-btn" id="rally-btn" onclick="placeRallyPoint()">🚛 Rally</button>
@@ -228,6 +308,7 @@
     <div id="admin-list"></div>
     <button class="admin-clear" onclick="clearAllSessions()">🗑 Clear everyone & start fresh</button>
     <button class="admin-clear" style="margin-top:0.4rem;background:#fff3cd;color:#856404" onclick="clearBoundary()">✏️ Erase & redraw zone</button>
+    <button class="admin-clear" style="margin-top:0.4rem;background:#e8f0fe;color:#1a56c4" onclick="editBagTarget()">🎯 Edit bag target</button>
   </div>
 
   <!-- STREET DONE MODAL -->
@@ -235,7 +316,10 @@
     <div class="modal">
       <div class="modal-title">✅ Mark street as done</div>
       <div class="modal-sub">Enter the street name and how many bags you dropped.</div>
-      <input type="text" id="street-input" placeholder="e.g. Rue Saint-Denis" autocomplete="off"/>
+      <div style="position:relative;">
+        <input type="text" id="street-input" placeholder="e.g. Rue Saint-Denis" autocomplete="off" oninput="onStreetInput()" style="width:100%;padding:0.85rem 1rem;border:1.5px solid #ddd;border-radius:12px;font-size:1rem;outline:none;margin-bottom:0;"/>
+        <div id="street-autocomplete" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);margin-top:2px;overflow:hidden;z-index:900;max-height:160px;overflow-y:auto;"></div>
+      </div>
       <div class="bag-counter">
         <button class="bag-counter-btn" onclick="changeBags(-1)">−</button>
         <div>
@@ -247,6 +331,25 @@
       <div class="modal-btns">
         <button class="modal-cancel" onclick="closeModal()">Cancel</button>
         <button class="modal-confirm" onclick="confirmStreetDone()">Save</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- INCIDENT MODAL -->
+  <div class="modal-overlay" id="incident-modal-overlay">
+    <div class="modal">
+      <div class="modal-title">⚠️ Report an incident</div>
+      <div class="modal-sub">Drop a warning pin at your current location with a note and optional photo.</div>
+      <textarea id="incident-note" rows="3" placeholder="Describe the issue (e.g. road blocked, dog, icy sidewalk…)" style="width:100%;padding:0.75rem 1rem;border:1.5px solid #ddd;border-radius:12px;font-size:0.95rem;outline:none;resize:none;font-family:inherit;margin-bottom:0.75rem;" class="incident-note"></textarea>
+      <label style="display:flex;align-items:center;gap:0.5rem;background:#f5f5f5;border-radius:12px;padding:0.7rem 1rem;cursor:pointer;margin-bottom:0.75rem;font-size:0.85rem;font-weight:600;color:#555;">
+        📷 Add a photo (optional)
+        <input type="file" id="incident-photo" accept="image/*" capture="environment" style="display:none;" onchange="previewIncidentPhoto(this)"/>
+      </label>
+      <img id="incident-preview" alt="Preview"/>
+      <div class="modal-btns">
+        <button class="modal-cancel" onclick="closeIncidentModal()">Cancel</button>
+        <button class="modal-confirm" style="background:#e6a817;color:#fff;" onclick="confirmIncident()">📍 Drop pin</button>
       </div>
     </div>
   </div>
@@ -274,12 +377,15 @@
     <button onclick="cancelRallyTap()" style="margin-left:0.75rem;background:rgba(255,255,255,0.25);border:none;color:#fff;border-radius:8px;padding:2px 8px;cursor:pointer;font-weight:700;">✕</button>
   </div>
 
+  <div id="map-loading" class="map-loading"><div class="map-loading-spinner"></div><div class="map-loading-text">Loading map…</div></div>
   <div class="toast" id="toast"></div>
 
   <div class="bottombar">
     <button class="main-btn start" id="main-btn" onclick="toggleTracking()">▶ Start</button>
     <button class="mark-btn" id="mark-btn" onclick="openModal()" disabled>✅ Done</button>
     <button class="summary-btn" onclick="showSummary()">📊 Summary</button>
+    <button id="incident-btn" onclick="openIncidentModal()" style="flex:0 0 auto;padding:0.8rem 0.7rem;border-radius:14px;font-size:0.8rem;font-weight:700;cursor:pointer;background:#fff3cd;color:#856404;border:1.5px solid #ffc107;white-space:nowrap;" title="Report an incident">⚠️</button>
+    <button id="eco-btn" onclick="setTrackingMode(trackingMode==='high'?'eco':'high')" style="flex:0 0 auto;padding:0.8rem 0.7rem;border-radius:14px;font-size:0.8rem;font-weight:700;cursor:pointer;background:#e8f5e9;color:#2e7d32;border:none;white-space:nowrap;" title="Toggle eco/high accuracy mode">🌿</button>
   </div>
 </div>
 
@@ -374,16 +480,17 @@ async function loadCampaigns() {
   if (data && data.length > 0) {
     orDiv.style.display = 'block';
     list.innerHTML = data.map(c =>
-      '<div class="campaign-item" onclick="selectCampaign(\'' + c.id + '\',\'' + c.name.replace(/'/g,"\'") + '\',event)">' +
+      '<div class="campaign-item" onclick="selectCampaign(\'' + c.id + '\',\'' + c.name.replace(/'/g,"\'") + '\',' + (c.bag_target||1600) + ',event)">' +
       '<span class="campaign-item-name">' + c.name + '</span>' +
       '<span class="campaign-item-date">' + new Date(c.created_at).toLocaleDateString() + '</span></div>'
     ).join('');
   } else { orDiv.style.display='none'; list.innerHTML=''; }
 }
 
-function selectCampaign(id, name, e) {
+function selectCampaign(id, name, bagTarget, e) {
   myCampaign={id,name};
   document.getElementById('campaign-input').value=name;
+  document.getElementById('bag-target-input').value=bagTarget||'';
   document.querySelectorAll('.campaign-item').forEach(el=>el.classList.remove('selected'));
   e.currentTarget.classList.add('selected');
 }
@@ -391,6 +498,7 @@ function selectCampaign(id, name, e) {
 async function submitCampaign() {
   const campaignName=document.getElementById('campaign-input').value.trim();
   const name=document.getElementById('name-input').value.trim();
+  const bagTargetInput=parseInt(document.getElementById('bag-target-input').value)||1600;
   if (!campaignName){showEl('name-error','Please enter a campaign name');return;}
   if (!name){showEl('name-error','Please enter your name');return;}
   const btn=document.getElementById('join-btn');
@@ -399,14 +507,17 @@ async function submitCampaign() {
     let campaignId=(myCampaign&&myCampaign.name===campaignName)?myCampaign.id:null;
     if (!campaignId) {
       const {data:existing}=await sb.from('campaigns').select('*').eq('name',campaignName).maybeSingle();
-      if (existing){campaignId=existing.id;}
-      else {
-        const {data:newC,error:cErr}=await sb.from('campaigns').insert({name:campaignName}).select().single();
+      if (existing){
+        campaignId=existing.id;
+        // Use stored bag target if user didn't override it
+        if(!document.getElementById('bag-target-input').value) bagTargetInput=existing.bag_target||1600;
+      } else {
+        const {data:newC,error:cErr}=await sb.from('campaigns').insert({name:campaignName,bag_target:bagTargetInput}).select().single();
         if (cErr){showEl('name-error','Error: '+cErr.message);btn.disabled=false;btn.textContent='Go to map →';return;}
         campaignId=newC.id;
       }
     }
-    myCampaign={id:campaignId,name:campaignName};
+    myCampaign={id:campaignId,name:campaignName,bagTarget:bagTargetInput};
     const userEmail=myUser.email;
     const {data:existingSess}=await sb.from('sessions').select('*').eq('campaign_id',campaignId).eq('user_email',userEmail).maybeSingle();
     let sessionData;
@@ -433,12 +544,15 @@ async function submitCampaign() {
 
 // ── MAP ───────────────────────────────────────────────
 function initMap() {
+  showMapLoading();
   map=L.map('map',{zoomControl:false}).setView([45.5017,-73.5673],13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
   map.on('click',e=>{onMapClick(e);closeSearchResults();});
   loadExistingData();
   subscribeRealtime();
+  setupReconnect();
+  updateEcoBtn();
   setInterval(()=>{if(mySession)sb.from('sessions').update({last_seen:new Date().toISOString()}).eq('id',mySession);},30000);
 }
 
@@ -463,8 +577,12 @@ async function loadExistingData() {
     // Load rally point
     const {data:rally}=await sb.from('rally_points').select('*').eq('campaign_id',cid).order('created_at',{ascending:false}).limit(1);
     if (rally&&rally.length>0) drawRallyMarker(rally[0].lat,rally[0].lng);
+    // Load incident pins (all campaigns — they persist)
+    const {data:incidents}=await sb.from('incident_pins').select('*').eq('campaign_id',cid).order('created_at',{ascending:true});
+    if (incidents) incidents.forEach(m=>placeIncidentPin(m));
     updateTeamPanel();updateLegend();if(isManager)updateAdminPanel();
   } catch(e){console.error(e);}
+  finally{hideMapLoading();}
 }
 
 function subscribeRealtime() {
@@ -504,8 +622,16 @@ function subscribeRealtime() {
   sb.channel('rally-ch').on('postgres_changes',{event:'INSERT',schema:'public',table:'rally_points',filter:'campaign_id=eq.'+cid},payload=>{
     drawRallyMarker(payload.new.lat,payload.new.lng);
     showToast('🚛 Rally point set by '+payload.new.set_by);
+    sendRallyNotification(payload.new.set_by);
   }).on('postgres_changes',{event:'DELETE',schema:'public',table:'rally_points',filter:'campaign_id=eq.'+cid},payload=>{
     if(rallyMarker){map.removeLayer(rallyMarker);rallyMarker=null;}
+  }).subscribe();
+
+  sb.channel('incident-ch').on('postgres_changes',{event:'INSERT',schema:'public',table:'incident_pins',filter:'campaign_id=eq.'+cid},payload=>{
+    placeIncidentPin(payload.new);
+    showToast('⚠️ Incident reported by '+payload.new.added_by);
+  }).on('postgres_changes',{event:'DELETE',schema:'public',table:'incident_pins',filter:'campaign_id=eq.'+cid},payload=>{
+    if(incidentObjects[payload.old.id]){map.removeLayer(incidentObjects[payload.old.id]);delete incidentObjects[payload.old.id];}
   }).subscribe();
 }
 
@@ -540,26 +666,19 @@ function toggleTracking(){if(isDrawMode)return;isTracking?stopTracking():startTr
 function startTracking(){
   if(!navigator.geolocation){showToast('Geolocation not supported');return;}
   isTracking=true;myPoints=[];trackingStartTime=new Date();
-  // Save start time to session
   sb.from('sessions').update({tracking_start:trackingStartTime.toISOString()}).eq('id',mySession);
   document.getElementById('main-btn').className='main-btn stop';
   document.getElementById('main-btn').textContent='⏹ Stop';
   document.getElementById('topbar-status').textContent='Tracking…';
   document.getElementById('mark-btn').disabled=false;
-  watchId=navigator.geolocation.watchPosition(async pos=>{
-    const {latitude:lat,longitude:lng}=pos.coords;
-    lastPos={lat,lng};myPoints.push([lat,lng]);
-    if(myPolyline)map.removeLayer(myPolyline);
-    myPolyline=L.polyline(myPoints,{color:myColor,weight:5,opacity:0.85}).addTo(map);
-    updateMarker(mySession,lat,lng,myColor,myName);
-    if(myPoints.length===1)map.setView([lat,lng],16);
-    await sb.from('locations').insert({session_id:mySession,lat,lng,campaign_id:myCampaign.id});
-  },err=>showToast('Location error: '+err.message),{enableHighAccuracy:true,maximumAge:5000,timeout:10000});
+  requestNotificationPermission();
+  if(trackingMode==='eco'){startEcoTracking();}else{startWatchPosition();}
 }
 
 function stopTracking(){
   isTracking=false;
   if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;}
+  if(ecoInterval){clearInterval(ecoInterval);ecoInterval=null;}
   const stopTime=new Date();
   sb.from('sessions').update({tracking_end:stopTime.toISOString()}).eq('id',mySession);
   document.getElementById('main-btn').className='main-btn start';
@@ -726,9 +845,10 @@ async function showSummary(){
   }
 
   const totalBags=Object.values(bagsByPerson).reduce((a,b)=>a+b,0);
-  const pct=Math.min(100,Math.round((totalBags/TOTAL_BAGS_TARGET)*100));
+  const bagTarget=myCampaign.bagTarget||TOTAL_BAGS_TARGET;
+  const pct=Math.min(100,Math.round((totalBags/bagTarget)*100));
   document.getElementById('progress-fill').style.width=pct+'%';
-  document.getElementById('progress-label').textContent=totalBags.toLocaleString()+' / '+TOTAL_BAGS_TARGET.toLocaleString()+' bags ('+pct+'%)';
+  document.getElementById('progress-label').textContent=totalBags.toLocaleString()+' / '+bagTarget.toLocaleString()+' bags ('+pct+'%)';
 
   // Bags list
   const bagsList=document.getElementById('summary-bags-list');
@@ -839,6 +959,19 @@ async function clearBoundary(){
   if(boundaryPolygon){map.removeLayer(boundaryPolygon);boundaryPolygon=null;}
   showToast('Zone cleared — tap ✏️ Zone to redraw');
 }
+async function editBagTarget(){
+  const current=myCampaign.bagTarget||1600;
+  const val=prompt('Enter new bag target for this campaign:',current);
+  if(val===null)return;
+  const num=parseInt(val);
+  if(isNaN(num)||num<1){showToast('Invalid number');return;}
+  const {error}=await sb.from('campaigns').update({bag_target:num}).eq('id',myCampaign.id);
+  if(error){showToast('Error: '+error.message);return;}
+  myCampaign.bagTarget=num;
+  showToast('🎯 Bag target updated to '+num.toLocaleString());
+  adminPanelVisible=false;
+  document.getElementById('admin-panel').classList.remove('visible');
+}
 function onMapClick(e){
   // Rally tap mode takes priority
   if(isRallyTapMode){
@@ -903,7 +1036,7 @@ async function goBackToMain(){
   mySession=null;myColor=null;myName=null;myCampaign=null;
   pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
   boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];
-  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;
+  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};
   // Reload campaigns and go back
   await loadCampaigns();
   document.getElementById('join-btn').disabled=false;
@@ -920,7 +1053,7 @@ async function logOut(){
   if(map){map.remove();map=null;}
   mySession=null;myColor=null;myName=null;myCampaign=null;myUser=null;
   pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
-  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;
+  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};
   showScreen('auth-screen');
 }
 function showEl(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
@@ -930,6 +1063,278 @@ document.getElementById('name-input').addEventListener('keydown',e=>{if(e.key===
 document.getElementById('campaign-input').addEventListener('keydown',e=>{if(e.key==='Enter')submitCampaign();});
 document.getElementById('street-input').addEventListener('keydown',e=>{if(e.key==='Enter')confirmStreetDone();});
 
+
+
+// ── LOADING OVERLAY ───────────────────────────────────
+function showMapLoading(){ const el=document.getElementById('map-loading');if(el)el.style.display='flex'; }
+function hideMapLoading(){ const el=document.getElementById('map-loading');if(el)el.style.display='none'; }
+
+// ── INCIDENT PINS ─────────────────────────────────────
+let incidentObjects={};
+let incidentPhotoData=null;
+
+function openIncidentModal(){
+  document.getElementById('incident-note').value='';
+  document.getElementById('incident-preview').style.display='none';
+  document.getElementById('incident-preview').src='';
+  document.getElementById('incident-photo').value='';
+  incidentPhotoData=null;
+  document.getElementById('incident-modal-overlay').classList.add('visible');
+  setTimeout(()=>document.getElementById('incident-note').focus(),100);
+}
+function closeIncidentModal(){
+  document.getElementById('incident-modal-overlay').classList.remove('visible');
+}
+function previewIncidentPhoto(input){
+  if(!input.files||!input.files[0])return;
+  const file=input.files[0];
+  // Resize to max 800px wide before storing to keep size manageable
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const maxW=800;
+      const scale=img.width>maxW?maxW/img.width:1;
+      const canvas=document.createElement('canvas');
+      canvas.width=img.width*scale;canvas.height=img.height*scale;
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      incidentPhotoData=canvas.toDataURL('image/jpeg',0.75);
+      const prev=document.getElementById('incident-preview');
+      prev.src=incidentPhotoData;prev.style.display='block';
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+async function confirmIncident(){
+  const note=document.getElementById('incident-note').value.trim();
+  if(!note){showToast('Please add a note describing the issue');return;}
+  const pos=lastPos||{lat:map.getCenter().lat,lng:map.getCenter().lng};
+  const btn=document.querySelector('#incident-modal-overlay .modal-confirm');
+  btn.disabled=true;btn.textContent='Saving…';
+  const {error}=await sb.from('incident_pins').insert({
+    note,
+    photo:incidentPhotoData||null,
+    lat:pos.lat,lng:pos.lng,
+    added_by:myName,
+    color:myColor,
+    campaign_id:myCampaign.id
+  });
+  btn.disabled=false;btn.textContent='📍 Drop pin';
+  if(error){showToast('Error: '+error.message);return;}
+  closeIncidentModal();
+}
+function placeIncidentPin(m){
+  const icon=L.divIcon({
+    className:'',
+    html:'<div style="font-size:26px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">⚠️</div>',
+    iconSize:[30,30],iconAnchor:[15,28]
+  });
+  const photoHtml=m.photo?'<img src="'+m.photo+'" style="width:100%;border-radius:8px;margin-bottom:8px;max-height:160px;object-fit:cover;"/>':'';
+  const popupHtml='<div style="font-family:sans-serif;min-width:180px;max-width:240px">'+
+    photoHtml+
+    '<div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;color:#856404;">⚠️ Incident</div>'+
+    '<div style="font-size:0.85rem;color:#333;margin-bottom:6px;">'+m.note+'</div>'+
+    '<div style="font-size:0.75rem;color:#999;margin-bottom:8px;">Reported by '+m.added_by+'</div>'+
+    '<button onclick="deleteIncidentPin(''+m.id+'')" style="background:#fce8e6;color:#d93025;border:none;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%">🗑 Remove</button>'+
+    '</div>';
+  const marker=L.marker([m.lat,m.lng],{icon}).bindPopup(popupHtml).addTo(map);
+  incidentObjects[m.id]=marker;
+}
+async function deleteIncidentPin(id){
+  map.closePopup();
+  await sb.from('incident_pins').delete().eq('id',id);
+  if(incidentObjects[id]){map.removeLayer(incidentObjects[id]);delete incidentObjects[id];}
+  showToast('Incident pin removed');
+}
+
+// ── ECO BTN VISUAL STATE ──────────────────────────────
+function updateEcoBtn(){
+  const btn=document.getElementById('eco-btn');
+  if(!btn)return;
+  if(trackingMode==='eco'){btn.classList.add('eco-active');btn.title='Eco mode active — tap for high accuracy';}
+  else{btn.classList.remove('eco-active');btn.title='High accuracy mode — tap for eco';}
+}
+
+// ── REALTIME RECONNECT ────────────────────────────────
+function setupReconnect(){
+  window.addEventListener('online',()=>{
+    showToast('Connection restored — reconnecting…');
+    setTimeout(()=>{
+      // Re-subscribe all channels
+      sb.removeAllChannels();
+      subscribeRealtime();
+      // Re-fetch latest data silently
+      loadExistingData();
+    },1500);
+  });
+}
+
+// ── DARK MODE ─────────────────────────────────────────
+function toggleDarkMode(){
+  const dark=document.body.classList.toggle('dark');
+  localStorage.setItem('lufa-dark',dark?'1':'0');
+  document.getElementById('dark-btn').textContent=dark?'☀️':'🌙';
+}
+(function(){
+  if(localStorage.getItem('lufa-dark')==='1'){
+    document.body.classList.add('dark');
+    // btn not in DOM yet — will be set after map loads
+  }
+})();
+
+// ── CAMPAIGN HISTORY ──────────────────────────────────
+async function showHistory(){
+  showScreen('history-screen');
+  const el=document.getElementById('history-list');
+  el.innerHTML='<div style="color:#999;font-size:0.9rem;text-align:center;margin-top:2rem;">Loading…</div>';
+  const {data:campaigns}=await sb.from('campaigns').select('*').order('created_at',{ascending:false}).limit(30);
+  if(!campaigns||!campaigns.length){el.innerHTML='<div style="color:#999;font-size:0.9rem;text-align:center;margin-top:2rem;">No campaigns yet.</div>';return;}
+  // For each campaign load aggregate data
+  const cids=campaigns.map(c=>c.id);
+  const {data:markers}=await sb.from('street_markers').select('campaign_id,bags_dropped').in('campaign_id',cids);
+  const {data:sessions_data}=await sb.from('sessions').select('campaign_id,name,color').in('campaign_id',cids);
+  // Build lookup maps
+  const bagsByCampaign={};
+  const streetsByCampaign={};
+  (markers||[]).forEach(m=>{
+    bagsByCampaign[m.campaign_id]=(bagsByCampaign[m.campaign_id]||0)+(m.bags_dropped||0);
+    streetsByCampaign[m.campaign_id]=(streetsByCampaign[m.campaign_id]||0)+1;
+  });
+  const membersByCampaign={};
+  (sessions_data||[]).forEach(s=>{
+    if(!membersByCampaign[s.campaign_id])membersByCampaign[s.campaign_id]=[];
+    membersByCampaign[s.campaign_id].push(s);
+  });
+  el.innerHTML=campaigns.map(c=>{
+    const bags=bagsByCampaign[c.id]||0;
+    const streets=streetsByCampaign[c.id]||0;
+    const members=membersByCampaign[c.id]||[];
+    const pct=Math.min(100,Math.round((bags/TOTAL_BAGS_TARGET)*100));
+    const date=new Date(c.created_at).toLocaleDateString('fr-CA',{month:'short',day:'numeric',year:'numeric'});
+    const dotsHtml=members.slice(0,6).map(m=>'<div style="width:10px;height:10px;border-radius:50%;background:'+m.color+';flex-shrink:0;" title="'+m.name+'"></div>').join('');
+    return '<div style="background:#fff;border-radius:14px;padding:1rem;box-shadow:0 1px 4px rgba(0,0,0,0.07);">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">'+
+        '<div style="font-weight:700;font-size:0.95rem;color:#1a1a1a;">'+c.name+'</div>'+
+        '<div style="font-size:0.75rem;color:#999;">'+date+'</div>'+
+      '</div>'+
+      '<div style="background:#e8f5e9;border-radius:20px;height:8px;margin-bottom:0.4rem;overflow:hidden;">'+
+        '<div style="background:#4d8c3f;height:100%;border-radius:20px;width:'+pct+'%;transition:width 0.4s;"></div>'+
+      '</div>'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;">'+
+        '<div style="font-size:0.8rem;color:#555;">📦 '+bags.toLocaleString()+' bags · ✅ '+streets+' streets</div>'+
+        '<div style="display:flex;gap:3px;align-items:center;">'+dotsHtml+(members.length>6?'<div style="font-size:0.7rem;color:#999;margin-left:2px;">+'+( members.length-6)+'</div>':'')+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── STREET AUTOCOMPLETE ───────────────────────────────
+let streetSearchTimeout=null;
+function onStreetInput(){
+  clearTimeout(streetSearchTimeout);
+  const q=document.getElementById('street-input').value.trim();
+  if(q.length<3){document.getElementById('street-autocomplete').style.display='none';return;}
+  streetSearchTimeout=setTimeout(()=>fetchStreetSuggestions(q),350);
+}
+async function fetchStreetSuggestions(q){
+  try{
+    const center=lastPos||{lat:45.5017,lng:-73.5673};
+    const url='https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=5&countrycodes=ca&bounded=1&viewbox='+(center.lng-0.05)+','+(center.lat+0.05)+','+(center.lng+0.05)+','+(center.lat-0.05);
+    const res=await fetch(url,{headers:{'Accept-Language':'fr,en'}});
+    const data=await res.json();
+    const el=document.getElementById('street-autocomplete');
+    if(!data.length){el.style.display='none';return;}
+    el.innerHTML=data.map(r=>{
+      // Extract just the street name part
+      const parts=r.display_name.split(',');
+      const short=parts[0].trim();
+      return '<div onclick="selectStreetSuggestion(''+short.replace(/'/g,"\'")+'''+')" style="padding:0.6rem 0.85rem;font-size:0.85rem;color:#333;cursor:pointer;border-bottom:1px solid #f0f0f0;">'+short+'<span style="font-size:0.75rem;color:#999;margin-left:0.4rem;">'+( parts[1]||'').trim()+'</span></div>';
+    }).join('');
+    el.style.display='block';
+  }catch(e){document.getElementById('street-autocomplete').style.display='none';}
+}
+function selectStreetSuggestion(name){
+  document.getElementById('street-input').value=name;
+  document.getElementById('street-autocomplete').style.display='none';
+}
+
+// ── BATTERY-FRIENDLY TRACKING ─────────────────────────
+let trackingMode='high'; // 'high' or 'eco'
+let ecoInterval=null;
+
+function setTrackingMode(mode){
+  trackingMode=mode;
+  if(!isTracking)return;
+  // Restart tracking with new mode
+  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;}
+  if(ecoInterval){clearInterval(ecoInterval);ecoInterval=null;}
+  if(mode==='high'){
+    startWatchPosition();
+  } else {
+    startEcoTracking();
+  }
+  updateEcoBtn();
+  showToast(mode==='high'?'🔋 High accuracy mode':'🌿 Eco mode (30s interval)');
+}
+
+function startWatchPosition(){
+  watchId=navigator.geolocation.watchPosition(async pos=>{
+    await handleNewPosition(pos.coords.latitude,pos.coords.longitude);
+  },err=>showToast('Location error: '+err.message),{enableHighAccuracy:true,maximumAge:5000,timeout:10000});
+}
+
+function startEcoTracking(){
+  // Immediately get one position, then poll every 30s
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    await handleNewPosition(pos.coords.latitude,pos.coords.longitude);
+  },err=>showToast('Location error: '+err.message),{enableHighAccuracy:false,maximumAge:30000,timeout:15000});
+  ecoInterval=setInterval(()=>{
+    if(!isTracking)return;
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      await handleNewPosition(pos.coords.latitude,pos.coords.longitude);
+    },()=>{},{enableHighAccuracy:false,maximumAge:30000,timeout:15000});
+  },30000);
+}
+
+async function handleNewPosition(lat,lng){
+  lastPos={lat,lng};myPoints.push([lat,lng]);
+  if(myPolyline)map.removeLayer(myPolyline);
+  myPolyline=L.polyline(myPoints,{color:myColor,weight:5,opacity:0.85}).addTo(map);
+  updateMarker(mySession,lat,lng,myColor,myName);
+  if(myPoints.length===1)map.setView([lat,lng],16);
+  await sb.from('locations').insert({session_id:mySession,lat,lng,campaign_id:myCampaign.id});
+}
+
+// ── PUSH NOTIFICATIONS (rally point) ─────────────────
+async function requestNotificationPermission(){
+  if(!('Notification' in window))return;
+  if(Notification.permission==='default'){
+    await Notification.requestPermission();
+  }
+}
+function sendRallyNotification(setBy){
+  if(!('Notification' in window)||Notification.permission!=='granted')return;
+  new Notification('🚛 Rally point moved',{
+    body:setBy+' updated the rally & reload point. Tap to view.',
+    icon:'logo_lufa_grand.jpeg',
+    badge:'logo_lufa_grand.jpeg',
+    tag:'rally-point', // replaces previous notification instead of stacking
+    renotify:true
+  });
+}
+
+// ── CONFIRM BEFORE CLOSING TAB ────────────────────────
+window.addEventListener('beforeunload',e=>{
+  if(isTracking){
+    e.preventDefault();
+    e.returnValue='You are still tracking your route. Are you sure you want to leave?';
+    return e.returnValue;
+  }
+});
+
+// Apply saved dark mode to button after DOM ready
+if(localStorage.getItem('lufa-dark')==='1'){const b=document.getElementById('dark-btn');if(b)b.textContent='☀️';}
 checkAuth();
 </script>
 </body>
