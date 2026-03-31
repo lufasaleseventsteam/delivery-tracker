@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Delivery Tracker</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* SCREENS */
+  .screen { display: none; flex-direction: column; height: 100dvh; }
+  .screen.active { display: flex; }
+
+  /* JOIN SCREEN */
+  #join-screen { align-items: center; justify-content: center; padding: 2rem; background: #fff; }
+  .join-logo { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .join-title { font-size: 1.4rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem; }
+  .join-sub { font-size: 0.9rem; color: #666; margin-bottom: 2rem; }
+  .join-form { width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 1rem; }
+  .join-form input { padding: 0.9rem 1rem; border: 1.5px solid #ddd; border-radius: 12px; font-size: 1rem; outline: none; transition: border-color 0.2s; }
+  .join-form input:focus { border-color: #4285f4; }
+  .join-btn { padding: 0.9rem; background: #4285f4; color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .join-btn:active { background: #3367d6; }
+  .join-btn:disabled { background: #aaa; cursor: not-allowed; }
+
+  /* MAP SCREEN */
+  #map-screen { position: relative; }
+  #map { flex: 1; width: 100%; }
+  
+  /* TOP BAR */
+  .topbar { background: #fff; padding: 0.6rem 1rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,0.1); z-index: 1000; flex-shrink: 0; }
+  .topbar-left { display: flex; align-items: center; gap: 0.5rem; }
+  .user-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .topbar-name { font-weight: 600; font-size: 0.95rem; color: #1a1a1a; }
+  .topbar-status { font-size: 0.75rem; color: #666; }
+  .topbar-right { display: flex; gap: 0.5rem; }
+  .icon-btn { background: #f0f0f0; border: none; border-radius: 8px; padding: 0.4rem 0.7rem; font-size: 0.8rem; cursor: pointer; color: #333; font-weight: 500; }
+  .icon-btn.active { background: #e8f0fe; color: #4285f4; }
+  .icon-btn.danger { background: #fce8e6; color: #d93025; }
+
+  /* BOTTOM BAR */
+  .bottombar { background: #fff; padding: 0.75rem 1rem; box-shadow: 0 -1px 4px rgba(0,0,0,0.1); z-index: 1000; flex-shrink: 0; }
+  .main-btn { width: 100%; padding: 0.9rem; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.01em; }
+  .main-btn.start { background: #34a853; color: #fff; }
+  .main-btn.stop { background: #ea4335; color: #fff; }
+  .main-btn.draw { background: #fbbc04; color: #1a1a1a; }
+  .main-btn.done-draw { background: #4285f4; color: #fff; }
+
+  /* LEGEND */
+  .legend { position: absolute; bottom: 80px; left: 10px; background: rgba(255,255,255,0.95); border-radius: 10px; padding: 0.6rem 0.8rem; z-index: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-width: 180px; }
+  .legend-title { font-size: 0.7rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+  .legend-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
+  .legend-line { width: 20px; height: 3px; border-radius: 2px; }
+  .legend-name { font-size: 0.8rem; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* DRAW MODE OVERLAY */
+  .draw-hint { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); background: rgba(251,188,4,0.95); color: #1a1a1a; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; z-index: 600; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; }
+
+  /* TEAM PANEL */
+  .team-panel { position: absolute; top: 60px; right: 10px; background: rgba(255,255,255,0.97); border-radius: 12px; padding: 0.75rem; z-index: 500; box-shadow: 0 2px 12px rgba(0,0,0,0.15); min-width: 160px; display: none; }
+  .team-panel.visible { display: block; }
+  .team-panel-title { font-size: 0.7rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+  .team-member { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; }
+  .member-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .member-name { font-size: 0.85rem; color: #333; }
+  .member-time { font-size: 0.7rem; color: #999; }
+
+  /* TOAST */
+  .toast { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.85rem; z-index: 700; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- JOIN SCREEN -->
+<div id="join-screen" class="screen active">
+  <div class="join-logo">🛍️</div>
+  <div class="join-title">Delivery Tracker</div>
+  <div class="join-sub">Enter your name to join the team map</div>
+  <div class="join-form">
+    <input type="text" id="name-input" placeholder="Your name" maxlength="20" autocomplete="off"/>
+    <button class="join-btn" id="join-btn" onclick="joinTeam()">Join →</button>
+  </div>
+</div>
+
+<!-- MAP SCREEN -->
+<div id="map-screen" class="screen">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="user-dot" id="my-dot"></div>
+      <div>
+        <div class="topbar-name" id="topbar-name"></div>
+        <div class="topbar-status" id="topbar-status">Ready to start</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" id="team-btn" onclick="toggleTeamPanel()">👥 Team</button>
+      <button class="icon-btn" id="boundary-btn" onclick="toggleDrawMode()">✏️ Boundary</button>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="draw-hint" id="draw-hint">Tap map to draw boundary • Close shape to finish</div>
+
+  <div class="legend" id="legend">
+    <div class="legend-title">Covered streets</div>
+    <div id="legend-items"></div>
+  </div>
+
+  <div class="team-panel" id="team-panel">
+    <div class="team-panel-title">Team online</div>
+    <div id="team-list"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="bottombar">
+    <button class="main-btn start" id="main-btn" onclick="toggleTracking()">▶ Start tracking my route</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://okkcitmopghftoomgpet.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ra2NpdG1vcGdoZnRvb21ncGV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MDI0NjksImV4cCI6MjA4ODM3ODQ2OX0.EyaREhDw5QSb5pcjKJ02tSuCuoA4iq-vFapliS08jH8';
+
+const COLORS = ['#4285f4','#ea4335','#34a853','#fbbc04','#9c27b0','#00bcd4','#ff5722','#607d8b'];
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let map, mySession = null, myColor = null, myName = null;
+let isTracking = false, watchId = null;
+let polylines = {}, markers = {}, myPolyline = null, myPoints = [];
+let isDrawMode = false, boundaryPoints = [], boundaryLine = null, boundaryPolygon = null;
+let boundaryMarkers = [];
+let teamPanelVisible = false;
+let sessions = {};
+
+// ── JOIN ──────────────────────────────────────────────
+async function joinTeam() {
+  const name = document.getElementById('name-input').value.trim();
+  if (!name) { showToast('Please enter your name'); return; }
+
+  const btn = document.getElementById('join-btn');
+  btn.disabled = true; btn.textContent = 'Joining...';
+
+  // Pick a color based on existing sessions count
+  const { data: existing } = await sb.from('sessions').select('color');
+  const usedColors = (existing || []).map(s => s.color);
+  const color = COLORS.find(c => !usedColors.includes(c)) || COLORS[Math.floor(Math.random() * COLORS.length)];
+
+  const { data, error } = await sb.from('sessions').insert({ name, color }).select().single();
+  if (error) { showToast('Connection error — check your internet'); btn.disabled = false; btn.textContent = 'Join →'; return; }
+
+  mySession = data.id;
+  myColor = color;
+  myName = name;
+
+  document.getElementById('join-screen').classList.remove('active');
+  document.getElementById('map-screen').classList.add('active');
+  document.getElementById('my-dot').style.background = myColor;
+  document.getElementById('topbar-name').textContent = name;
+
+  initMap();
+}
+
+// ── MAP INIT ──────────────────────────────────────────
+function initMap() {
+  map = L.map('map', { zoomControl: false }).setView([45.5017, -73.5673], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap', maxZoom: 19
+  }).addTo(map);
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+  map.on('click', onMapClick);
+
+  loadExistingData();
+  subscribeRealtime();
+
+  // Ping last_seen every 30s
+  setInterval(() => {
+    if (mySession) sb.from('sessions').update({ last_seen: new Date().toISOString() }).eq('id', mySession);
+  }, 30000);
+}
+
+// ── LOAD EXISTING DATA ────────────────────────────────
+async function loadExistingData() {
+  // Load boundary
+  const { data: bounds } = await sb.from('boundary').select('*').order('created_at', { ascending: false }).limit(1);
+  if (bounds && bounds.length > 0) drawBoundaryFromPoints(bounds[0].points);
+
+  // Load all sessions
+  const { data: sess } = await sb.from('sessions').select('*');
+  if (sess) sess.forEach(s => { sessions[s.id] = s; if (s.id !== mySession) updateLegend(); });
+
+  // Load all location paths
+  const { data: locs } = await sb.from('locations').select('*').order('recorded_at', { ascending: true });
+  if (locs) {
+    const bySession = {};
+    locs.forEach(l => {
+      if (!bySession[l.session_id]) bySession[l.session_id] = [];
+      bySession[l.session_id].push([l.lat, l.lng]);
+    });
+    Object.entries(bySession).forEach(([sid, pts]) => {
+      const s = sess ? sess.find(s => s.id === sid) : null;
+      if (s) drawPath(sid, pts, s.color);
+    });
+  }
+
+  updateTeamPanel();
+  updateLegend();
+}
+
+// ── REALTIME SUBSCRIPTIONS ────────────────────────────
+function subscribeRealtime() {
+  // New locations
+  sb.channel('locations').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'locations' }, payload => {
+    const loc = payload.new;
+    if (loc.session_id === mySession) return; // already drawn locally
+    const s = sessions[loc.session_id];
+    if (!s) return;
+    if (!polylines[loc.session_id]) polylines[loc.session_id] = [];
+    polylines[loc.session_id].push([loc.lat, loc.lng]);
+    drawPath(loc.session_id, polylines[loc.session_id], s.color);
+    updateMarker(loc.session_id, loc.lat, loc.lng, s.color, s.name);
+  }).subscribe();
+
+  // New sessions
+  sb.channel('sessions').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sessions' }, payload => {
+    const s = payload.new;
+    sessions[s.id] = s;
+    updateTeamPanel();
+    updateLegend();
+    showToast(`${s.name} joined the map`);
+  }).on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sessions' }, payload => {
+    sessions[payload.new.id] = payload.new;
+    updateTeamPanel();
+  }).subscribe();
+
+  // New boundary
+  sb.channel('boundary').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'boundary' }, payload => {
+    drawBoundaryFromPoints(payload.new.points);
+    showToast('Territory boundary updated');
+  }).subscribe();
+}
+
+// ── TRACKING ─────────────────────────────────────────
+function toggleTracking() {
+  if (isDrawMode) return;
+  isTracking ? stopTracking() : startTracking();
+}
+
+function startTracking() {
+  if (!navigator.geolocation) { showToast('Geolocation not supported on this device'); return; }
+  isTracking = true;
+  myPoints = [];
+  document.getElementById('main-btn').className = 'main-btn stop';
+  document.getElementById('main-btn').textContent = '⏹ Stop tracking';
+  document.getElementById('topbar-status').textContent = 'Tracking your route…';
+
+  watchId = navigator.geolocation.watchPosition(async pos => {
+    const { latitude: lat, longitude: lng } = pos.coords;
+    myPoints.push([lat, lng]);
+
+    // Draw locally
+    if (myPolyline) map.removeLayer(myPolyline);
+    myPolyline = L.polyline(myPoints, { color: myColor, weight: 5, opacity: 0.85 }).addTo(map);
+    updateMarker(mySession, lat, lng, myColor, myName);
+
+    if (myPoints.length === 1) map.setView([lat, lng], 16);
+
+    // Save to Supabase
+    await sb.from('locations').insert({ session_id: mySession, lat, lng });
+  }, err => {
+    showToast('Location error: ' + err.message);
+  }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 });
+}
+
+function stopTracking() {
+  isTracking = false;
+  if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+  document.getElementById('main-btn').className = 'main-btn start';
+  document.getElementById('main-btn').textContent = '▶ Start tracking my route';
+  document.getElementById('topbar-status').textContent = 'Tracking stopped';
+  showToast('Route saved!');
+}
+
+// ── DRAW PATH ─────────────────────────────────────────
+function drawPath(sid, points, color) {
+  if (polylines[sid]) map.removeLayer(polylines[sid]);
+  if (points.length > 1) {
+    polylines[sid] = L.polyline(points, { color, weight: 5, opacity: 0.8 }).addTo(map);
+  }
+}
+
+function updateMarker(sid, lat, lng, color, name) {
+  if (markers[sid]) map.removeLayer(markers[sid]);
+  const icon = L.divIcon({
+    className: '',
+    html: `<div style="background:${color};width:14px;height:14px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
+    iconSize: [14, 14], iconAnchor: [7, 7]
+  });
+  markers[sid] = L.marker([lat, lng], { icon }).bindTooltip(name, { permanent: false, direction: 'top' }).addTo(map);
+}
+
+// ── BOUNDARY DRAWING ──────────────────────────────────
+function toggleDrawMode() {
+  if (isTracking) { showToast('Stop tracking first'); return; }
+  isDrawMode = !isDrawMode;
+  const btn = document.getElementById('boundary-btn');
+  const hint = document.getElementById('draw-hint');
+  const mainBtn = document.getElementById('main-btn');
+
+  if (isDrawMode) {
+    btn.classList.add('active');
+    hint.style.display = 'block';
+    mainBtn.className = 'main-btn done-draw';
+    mainBtn.textContent = '✓ Finish boundary';
+    mainBtn.onclick = finishBoundary;
+    boundaryPoints = [];
+    boundaryMarkers.forEach(m => map.removeLayer(m));
+    boundaryMarkers = [];
+    if (boundaryLine) { map.removeLayer(boundaryLine); boundaryLine = null; }
+    if (boundaryPolygon) { map.removeLayer(boundaryPolygon); boundaryPolygon = null; }
+    showToast('Tap points on the map to draw boundary');
+  } else {
+    cancelDraw();
+  }
+}
+
+function cancelDraw() {
+  isDrawMode = false;
+  document.getElementById('boundary-btn').classList.remove('active');
+  document.getElementById('draw-hint').style.display = 'none';
+  document.getElementById('main-btn').className = 'main-btn start';
+  document.getElementById('main-btn').textContent = '▶ Start tracking my route';
+  document.getElementById('main-btn').onclick = toggleTracking;
+}
+
+function onMapClick(e) {
+  if (!isDrawMode) return;
+  const { lat, lng } = e.latlng;
+  boundaryPoints.push([lat, lng]);
+
+  const dot = L.circleMarker([lat, lng], { radius: 5, color: '#fbbc04', fillColor: '#fbbc04', fillOpacity: 1, weight: 2 }).addTo(map);
+  boundaryMarkers.push(dot);
+
+  if (boundaryLine) map.removeLayer(boundaryLine);
+  if (boundaryPoints.length > 1) {
+    boundaryLine = L.polyline([...boundaryPoints, boundaryPoints[0]], { color: '#fbbc04', weight: 2.5, dashArray: '6 4', opacity: 0.9 }).addTo(map);
+  }
+}
+
+async function finishBoundary() {
+  if (boundaryPoints.length < 3) { showToast('Add at least 3 points'); return; }
+
+  // Clean up temp markers and line
+  boundaryMarkers.forEach(m => map.removeLayer(m));
+  boundaryMarkers = [];
+  if (boundaryLine) { map.removeLayer(boundaryLine); boundaryLine = null; }
+
+  // Save to Supabase
+  await sb.from('boundary').insert({ points: boundaryPoints });
+  drawBoundaryFromPoints(boundaryPoints);
+  cancelDraw();
+  showToast('Boundary saved for the whole team!');
+}
+
+function drawBoundaryFromPoints(points) {
+  if (boundaryPolygon) map.removeLayer(boundaryPolygon);
+  boundaryPolygon = L.polygon(points, {
+    color: '#4285f4', weight: 2.5, dashArray: '8 5',
+    fillColor: '#4285f4', fillOpacity: 0.06
+  }).addTo(map);
+  map.fitBounds(boundaryPolygon.getBounds(), { padding: [40, 40] });
+}
+
+// ── LEGEND ────────────────────────────────────────────
+function updateLegend() {
+  const el = document.getElementById('legend-items');
+  const all = { [mySession]: { name: myName, color: myColor }, ...sessions };
+  el.innerHTML = Object.values(all).filter(s => s && s.name).map(s =>
+    `<div class="legend-item">
+      <div class="legend-line" style="background:${s.color}"></div>
+      <div class="legend-name">${s.name}</div>
+    </div>`
+  ).join('');
+}
+
+// ── TEAM PANEL ────────────────────────────────────────
+function toggleTeamPanel() {
+  teamPanelVisible = !teamPanelVisible;
+  document.getElementById('team-panel').classList.toggle('visible', teamPanelVisible);
+  updateTeamPanel();
+}
+
+function updateTeamPanel() {
+  const el = document.getElementById('team-list');
+  const all = { [mySession]: { name: myName, color: myColor, last_seen: new Date().toISOString() }, ...sessions };
+  el.innerHTML = Object.values(all).filter(s => s && s.name).map(s => {
+    const ago = s.last_seen ? timeSince(new Date(s.last_seen)) : '';
+    return `<div class="team-member">
+      <div class="member-dot" style="background:${s.color}"></div>
+      <div>
+        <div class="member-name">${s.name}${s.id === mySession ? ' (you)' : ''}</div>
+        <div class="member-time">${ago}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function timeSince(date) {
+  const sec = Math.floor((new Date() - date) / 1000);
+  if (sec < 60) return 'just now';
+  if (sec < 3600) return `${Math.floor(sec/60)}m ago`;
+  return `${Math.floor(sec/3600)}h ago`;
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Enter key on name input
+document.getElementById('name-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') joinTeam();
+});
+</script>
+</body>
+</html>
