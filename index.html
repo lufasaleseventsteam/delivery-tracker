@@ -724,22 +724,26 @@ function initMap() {
 }
 
 async function loadExistingData() {
+  console.log('loadExistingData: start');
   try {
     const cid=myCampaign.id;
+    console.log('loadExistingData: campaign id =', cid);
 
-    // Each query wrapped independently so one failure doesn't block others
     try {
       const {data:bounds}=await sb.from('boundary').select('*').eq('campaign_id',cid).order('created_at',{ascending:true});
+      console.log('loadExistingData: boundary OK', bounds?.length);
       if (bounds&&bounds.length>0) bounds.forEach(b=>drawBoundaryFromPoints(b.points));
     } catch(e){console.warn('boundary load failed:',e.message);}
 
     try {
       const {data:sess}=await sb.from('sessions').select('*').eq('campaign_id',cid);
+      console.log('loadExistingData: sessions OK', sess?.length);
       if (sess) sess.forEach(s=>{if(s.id!==mySession)sessions[s.id]=s;});
     } catch(e){console.warn('sessions load failed:',e.message);}
 
     try {
       const {data:locs}=await sb.from('locations').select('*').eq('campaign_id',cid).order('recorded_at',{ascending:true});
+      console.log('loadExistingData: locations OK', locs?.length);
       if (locs){
         const bySession={};
         locs.forEach(l=>{if(!bySession[l.session_id])bySession[l.session_id]=[];bySession[l.session_id].push([l.lat,l.lng]);});
@@ -752,22 +756,26 @@ async function loadExistingData() {
 
     try {
       const {data:sm}=await sb.from('street_markers').select('*').eq('campaign_id',cid);
+      console.log('loadExistingData: street_markers OK', sm?.length);
       if (sm) sm.forEach(m=>placeStreetMarker(m));
     } catch(e){console.warn('street_markers load failed:',e.message);}
 
     try {
       const {data:rally}=await sb.from('rally_points').select('*').eq('campaign_id',cid).order('created_at',{ascending:false}).limit(1);
+      console.log('loadExistingData: rally_points OK', rally?.length);
       if (rally&&rally.length>0){ drawRallyMarker(rally[0].lat,rally[0].lng); const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='flex'; }
     } catch(e){console.warn('rally_points load failed — table may not exist yet:',e.message);}
 
     try {
       const {data:incidents}=await sb.from('incident_pins').select('*').eq('campaign_id',cid).order('created_at',{ascending:true});
+      console.log('loadExistingData: incident_pins OK', incidents?.length);
       if (incidents) incidents.forEach(m=>placeIncidentPin(m));
     } catch(e){console.warn('incident_pins load failed — table may not exist yet:',e.message);}
 
+    console.log('loadExistingData: all done, hiding loader');
     updateTeamPanel();updateLegend();if(isManager)updateAdminPanel();
-  } catch(e){console.error('loadExistingData error:',e);}
-  finally{hideMapLoading();}
+  } catch(e){console.error('loadExistingData outer error:',e);}
+  finally{console.log('loadExistingData: finally block'); hideMapLoading();}
 }
 
 function subscribeRealtime() {
