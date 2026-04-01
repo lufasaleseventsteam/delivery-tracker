@@ -1,0 +1,25 @@
+{
+  "name": "Gift Drop Tracker",
+  "short_name": "Gift Drop Tracker",
+  "description": "Real-time delivery tracking for Les Fermes Lufa gift drop team",
+  "start_url": "/delivery-tracker/",
+  "scope": "/delivery-tracker/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#4d8c3f",
+  "theme_color": "#4d8c3f",
+  "icons": [
+    {
+      "src": "logo_lufa_grand.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo_lufa_grand.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
