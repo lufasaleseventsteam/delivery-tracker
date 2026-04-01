@@ -518,7 +518,10 @@
   <!-- ZONE OPTIONS MODAL -->
   <div class="modal-overlay" id="zone-modal-overlay">
     <div class="modal">
-      <div class="modal-title">✏️ Zone</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+        <div class="modal-title" style="margin-bottom:0;">✏️ Zone</div>
+        <button onclick="closeZoneModal()" style="background:#f0f0f0;border:none;border-radius:8px;padding:0.3rem 0.75rem;font-size:0.85rem;font-weight:700;cursor:pointer;color:#333;">✕ Close</button>
+      </div>
       <div class="modal-sub" id="zone-modal-sub">What would you like to do with the delivery zone?</div>
       <div class="modal-btns" style="flex-direction:column;gap:0.4rem;" id="zone-modal-btns">
       </div>
@@ -528,7 +531,10 @@
   <!-- RALLY POINT MODAL -->
   <div class="modal-overlay" id="rally-modal-overlay">
     <div class="modal">
-      <div class="modal-title">🚛 Set Rally & Reload Point</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+        <div class="modal-title" style="margin-bottom:0;">🚛 Rally Point</div>
+        <button onclick="closeRallyModal()" style="background:#f0f0f0;border:none;border-radius:8px;padding:0.3rem 0.75rem;font-size:0.85rem;font-weight:700;cursor:pointer;color:#333;">✕ Close</button>
+      </div>
       <div class="modal-sub" id="rally-modal-sub">Choose how to place the pin.</div>
       <div class="modal-btns" style="flex-direction:column;gap:0.4rem;" id="rally-choice-btns">
         <button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">
@@ -537,7 +543,6 @@
         <button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">
           👆 Tap on the map to place it
         </button>
-        <button class="modal-cancel" onclick="closeRallyModal()">Cancel</button>
       </div>
     </div>
   </div>
@@ -1011,14 +1016,13 @@ function placeRallyPoint(){
     document.getElementById('rally-choice-btns').innerHTML=
       '<button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">📍 Move to my GPS location</button>'+
       '<button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">👆 Tap on map to move it</button>'+
-      '<button class="modal-cancel" style="background:#fce8e6;color:#d93025;" onclick="removeRallyPoint()">🗑 Remove rally point</button>'+
-      '<button class="modal-cancel" onclick="closeRallyModal()">Cancel</button>';
+      '<button class="modal-cancel" style="background:#fce8e6;color:#d93025;" onclick="removeRallyPoint()">🗑 Remove rally point</button>';
   } else {
     document.getElementById('rally-modal-sub').textContent='Choose how to place the pin.';
     document.getElementById('rally-choice-btns').innerHTML=
       '<button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">📍 Use my current GPS location</button>'+
       '<button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">👆 Tap on the map to place it</button>'+
-      '<button class="modal-cancel" onclick="closeRallyModal()">Cancel</button>';
+      '';
   }
   document.getElementById('rally-modal-overlay').classList.add('visible');
 }
@@ -1224,12 +1228,6 @@ function openZoneModal(){
   eraseBtn.textContent='🗑 Erase zone';
   eraseBtn.onclick=()=>{closeZoneModal();clearBoundary();};
   btns.appendChild(eraseBtn);
-  // Cancel
-  const cancelBtn=document.createElement('button');
-  cancelBtn.className='modal-cancel';
-  cancelBtn.textContent='Cancel';
-  cancelBtn.onclick=closeZoneModal;
-  btns.appendChild(cancelBtn);
   document.getElementById('zone-modal-overlay').classList.add('visible');
 }
 function closeZoneModal(){
