@@ -143,6 +143,17 @@
   .toast { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.85rem; z-index: 900; opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
   .toast.show { opacity: 1; }
 
+  /* POCKET LOCK */
+  #pocket-lock { display:none; position:absolute; inset:0; background:#1a1a1a; z-index:2000; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem; touch-action:none; user-select:none; }
+  #pocket-lock.active { display:flex; }
+  .pocket-icon { font-size:3rem; }
+  .pocket-title { font-size:1.1rem; font-weight:700; color:#fff; }
+  .pocket-sub { font-size:0.85rem; color:#888; text-align:center; max-width:240px; }
+  .pocket-status { font-size:0.8rem; color:#4d8c3f; font-weight:600; display:flex; align-items:center; gap:0.4rem; }
+  .pocket-pulse { width:8px; height:8px; border-radius:50%; background:#4d8c3f; animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(0.8);} }
+  .pocket-unlock { margin-top:1rem; padding:1rem 2rem; background:#333; border:2px solid #555; border-radius:16px; color:#fff; font-size:0.95rem; font-weight:600; cursor:pointer; touch-action:manipulation; }
+
   /* DARK MODE */
   body.dark { background: #1a1a1a; }
   body.dark .screen { background: #1e1e1e; }
@@ -516,7 +527,16 @@
   </div>
 
   <div id="map-loading" class="map-loading"><div class="map-loading-spinner"></div><div class="map-loading-text">Loading map…</div></div>
-  <div class="toast" id="toast"></div>
+  <div id="toast" class="toast"></div>
+
+  <!-- POCKET LOCK OVERLAY -->
+  <div id="pocket-lock">
+    <div class="pocket-icon">🔒</div>
+    <div class="pocket-title">Screen Locked</div>
+    <div class="pocket-sub">Your route is still being tracked. Tap the button below to unlock.</div>
+    <div class="pocket-status"><div class="pocket-pulse"></div> Tracking active</div>
+    <button class="pocket-unlock" onclick="disablePocketLock()">Tap to Unlock</button>
+  </div>
 
   <div class="bottombar">
     <button class="main-btn start" id="main-btn" onclick="toggleTracking()">▶ Start</button>
@@ -524,6 +544,7 @@
     <button class="summary-btn" onclick="showSummary()">📊 Summary</button>
     <button id="incident-btn" onclick="openIncidentModal()" style="flex:0 0 auto;padding:0.8rem 0.7rem;border-radius:14px;font-size:0.8rem;font-weight:700;cursor:pointer;background:#fff3cd;color:#856404;border:1.5px solid #ffc107;white-space:nowrap;" title="Report an incident">⚠️</button>
     <button id="eco-btn" onclick="setTrackingMode(trackingMode==='high'?'eco':'high')" style="flex:0 0 auto;padding:0.8rem 0.7rem;border-radius:14px;font-size:0.8rem;font-weight:700;cursor:pointer;background:#e8f5e9;color:#2e7d32;border:none;white-space:nowrap;" title="Toggle eco/high accuracy mode">🌿</button>
+    <button id="pocket-btn" onclick="enablePocketLock()" style="flex:0 0 auto;padding:0.8rem 0.7rem;border-radius:14px;font-size:0.8rem;font-weight:700;cursor:pointer;background:#f0f0f0;color:#555;border:none;white-space:nowrap;display:none;" title="Lock screen while tracking">🔒</button>
   </div>
 </div>
 
@@ -801,6 +822,39 @@ function jumpToMyLocation(){
 // ── TRACKING ─────────────────────────────────────────
 function toggleTracking(){if(isDrawMode)return;isTracking?stopTracking():startTracking();}
 
+let wakeLock=null;
+
+async function requestWakeLock(){
+  if(!('wakeLock' in navigator)){return;}
+  try{
+    wakeLock=await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release',()=>{wakeLock=null;});
+  }catch(err){
+    // Permission denied or not supported — silently continue
+    console.log('Wake lock not available:',err.message);
+  }
+}
+async function releaseWakeLock(){
+  if(wakeLock){try{await wakeLock.release();}catch(e){}wakeLock=null;}
+}
+
+// ── POCKET LOCK ───────────────────────────────────────
+function enablePocketLock(){
+  document.getElementById('pocket-lock').classList.add('active');
+  // Update status text with person's name
+  document.querySelector('.pocket-status').innerHTML=
+    '<div class="pocket-pulse"></div> Tracking active · '+myName;
+}
+function disablePocketLock(){
+  document.getElementById('pocket-lock').classList.remove('active');
+}
+// Re-acquire wake lock if page becomes visible again (e.g. user switches back)
+document.addEventListener('visibilitychange',async()=>{
+  if(isTracking&&document.visibilityState==='visible'&&!wakeLock){
+    await requestWakeLock();
+  }
+});
+
 function startTracking(){
   if(!navigator.geolocation){showToast('Geolocation not supported');return;}
   isTracking=true;myPoints=[];trackingStartTime=new Date();
@@ -810,6 +864,20 @@ function startTracking(){
   document.getElementById('topbar-status').textContent='Tracking…';
   document.getElementById('mark-btn').disabled=false;
   requestNotificationPermission();
+  requestWakeLock();
+  document.getElementById('pocket-btn').style.display='flex';
+  // Auto-lock screen after 5 seconds
+  let countdown=5;
+  const statusEl=document.getElementById('topbar-status');
+  const autoLockTimer=setInterval(()=>{
+    countdown--;
+    statusEl.textContent='Tracking… locking in '+countdown+'s';
+    if(countdown<=0){
+      clearInterval(autoLockTimer);
+      statusEl.textContent='Tracking…';
+      if(isTracking)enablePocketLock();
+    }
+  },1000);
   if(trackingMode==='eco'){startEcoTracking();}else{startWatchPosition();}
 }
 
@@ -817,6 +885,9 @@ function stopTracking(){
   isTracking=false;
   if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;}
   if(ecoInterval){clearInterval(ecoInterval);ecoInterval=null;}
+  releaseWakeLock();
+  disablePocketLock();
+  document.getElementById('pocket-btn').style.display='none';
   const stopTime=new Date();
   sb.from('sessions').update({tracking_end:stopTime.toISOString()}).eq('id',mySession);
   document.getElementById('main-btn').className='main-btn start';
