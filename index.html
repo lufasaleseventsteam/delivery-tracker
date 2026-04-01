@@ -49,13 +49,27 @@
   .topbar-name { font-weight: 600; font-size: 0.85rem; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px; }
   .topbar-campaign { font-size: 0.7rem; color: #4d8c3f; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px; }
   .topbar-status { font-size: 0.7rem; color: #666; }
-  .topbar-right { display: flex; gap: 0.4rem; flex-shrink: 0; }
+  .topbar-right { display: flex; gap: 0.4rem; flex-shrink: 0; position: relative; }
+
+  /* OVERFLOW MENU */
+  .overflow-menu { position: absolute; top: calc(100% + 4px); right: 0; background: #fff; border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.18); z-index: 1100; min-width: 180px; overflow: hidden; display: none; flex-direction: column; }
+  .overflow-menu.visible { display: flex; }
+  .overflow-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.75rem 1rem; font-size: 0.88rem; font-weight: 500; color: #333; cursor: pointer; border: none; background: none; width: 100%; text-align: left; border-bottom: 0.5px solid #f0f0f0; }
+  .overflow-item:last-child { border-bottom: none; }
+  .overflow-item:hover { background: #f5f5f5; }
+  .overflow-item.danger { color: #d93025; }
+  .overflow-item.danger:hover { background: #fce8e6; }
+  body.dark .overflow-menu { background: #252525; box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
+  body.dark .overflow-item { color: #ccc; border-bottom-color: #333; }
+  body.dark .overflow-item:hover { background: #333; }
+  body.dark .overflow-item.danger { color: #ff7070; }
+  body.dark .overflow-item.danger:hover { background: #3d1a1a; }
   .icon-btn { background: #f0f0f0; border: none; border-radius: 8px; padding: 0.35rem 0.6rem; font-size: 0.75rem; cursor: pointer; color: #333; font-weight: 500; white-space: nowrap; }
   .icon-btn.active { background: #e8f0fe; color: #4285f4; }
   .icon-btn.danger { background: #fce8e6; color: #d93025; }
 
   /* SEARCH */
-  .searchbar { position: absolute; top: var(--topbar-h, 62px); left: 10px; right: 10px; z-index: 600; display: flex; gap: 0.4rem; }
+  .searchbar { position: absolute; top: var(--topbar-h, 58px); left: 10px; right: 10px; z-index: 600; display: flex; gap: 0.4rem; }
   .search-input-wrap { flex: 1; position: relative; }
   .search-input { width: 100%; padding: 0.6rem 0.75rem; border: none; border-radius: 10px; font-size: 0.9rem; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.18); background: #fff; }
   .search-results { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-top: 4px; overflow: hidden; display: none; z-index: 700; }
@@ -412,16 +426,15 @@
       <button class="icon-btn" id="team-btn" onclick="toggleTeamPanel()">👥</button>
       <button class="icon-btn danger" id="admin-btn" onclick="toggleAdminPanel()" style="display:none">⚙️</button>
       <button class="icon-btn" id="overflow-btn" onclick="toggleOverflowMenu()" title="More options">⋯</button>
+      <!-- OVERFLOW MENU — inside topbar-right for correct positioning -->
+      <div class="overflow-menu" id="overflow-menu">
+        <button class="overflow-item" onclick="closeOverflowMenu();placeRallyPoint()">🚛 Rally point</button>
+        <button class="overflow-item" id="overflow-zone-btn" onclick="closeOverflowMenu();toggleDrawMode()">✏️ Zone</button>
+        <button class="overflow-item" id="overflow-dark-btn" onclick="closeOverflowMenu();toggleDarkMode()">🌙 Dark mode</button>
+        <button class="overflow-item danger" id="overflow-admin-btn" onclick="closeOverflowMenu();toggleAdminPanel()" style="display:none">⚙️ Manage team</button>
+        <button class="overflow-item danger" onclick="closeOverflowMenu();logOut()">⏏ Sign out</button>
+      </div>
     </div>
-  </div>
-
-  <!-- OVERFLOW MENU -->
-  <div class="overflow-menu" id="overflow-menu">
-    <button class="overflow-item" onclick="closeOverflowMenu();placeRallyPoint()">🚛 Rally point</button>
-    <button class="overflow-item" id="overflow-zone-btn" onclick="closeOverflowMenu();toggleDrawMode()">✏️ Zone</button>
-    <button class="overflow-item" id="overflow-dark-btn" onclick="closeOverflowMenu();toggleDarkMode()">🌙 Dark mode</button>
-    <button class="overflow-item danger" id="overflow-admin-btn" onclick="closeOverflowMenu();toggleAdminPanel()" style="display:none">⚙️ Manage team</button>
-    <button class="overflow-item danger" onclick="closeOverflowMenu();logOut()">⏏ Sign out</button>
   </div>
 
   <div class="searchbar">
@@ -706,6 +719,7 @@ async function submitCampaign() {
     if (isManager) { document.getElementById('admin-btn').style.display='flex'; document.getElementById('overflow-admin-btn').style.display='flex'; }
     console.log('submitCampaign: calling showScreen map-screen');
     showScreen('map-screen');
+    updateTopbarHeight();
     console.log('submitCampaign: calling initMap');
     initMap();
     console.log('submitCampaign: done');
