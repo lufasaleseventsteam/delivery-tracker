@@ -97,7 +97,8 @@
   .modal input { width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #ddd; border-radius: 12px; font-size: 1rem; outline: none; margin-bottom: 0.75rem; }
   .modal input:focus { border-color: #4d8c3f; }
   .modal-btns { display: flex; gap: 0.5rem; }
-  .modal-btns button { flex: 1; padding: 0.65rem 0.5rem; border: none; border-radius: 12px; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
+  .modal-btns:not([style*="column"]) button { flex: 1; }
+  .modal-btns button { padding: 0.65rem 0.5rem; border: none; border-radius: 12px; font-size: 0.88rem; font-weight: 600; cursor: pointer; width: 100%; }
   .modal-cancel { background: #f0f0f0; color: #333; }
   .modal-confirm { background: #4d8c3f; color: #fff; }
   .bag-counter { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
