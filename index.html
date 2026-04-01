@@ -1130,15 +1130,21 @@ function placeIncidentPin(m){
     html:'<div style="font-size:26px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">⚠️</div>',
     iconSize:[30,30],iconAnchor:[15,28]
   });
-  const photoHtml=m.photo?'<img src="'+m.photo+'" style="width:100%;border-radius:8px;margin-bottom:8px;max-height:160px;object-fit:cover;"/>':'';
-  const popupHtml='<div style="font-family:sans-serif;min-width:180px;max-width:240px">'+
-    photoHtml+
-    '<div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;color:#856404;">⚠️ Incident</div>'+
-    '<div style="font-size:0.85rem;color:#333;margin-bottom:6px;">'+m.note+'</div>'+
-    '<div style="font-size:0.75rem;color:#999;margin-bottom:8px;">Reported by '+m.added_by+'</div>'+
-    '<button onclick="deleteIncidentPin(''+m.id+'')" style="background:#fce8e6;color:#d93025;border:none;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%">🗑 Remove</button>'+
-    '</div>';
-  const marker=L.marker([m.lat,m.lng],{icon}).bindPopup(popupHtml).addTo(map);
+  // Store id on window so inline onclick can reach it safely
+  const safeId=m.id;
+  const photoHtml=m.photo?`<img src="${m.photo}" style="width:100%;border-radius:8px;margin-bottom:8px;max-height:160px;object-fit:cover;"/>`:'';
+  const popupEl=document.createElement('div');
+  popupEl.style.cssText='font-family:sans-serif;min-width:180px;max-width:240px';
+  popupEl.innerHTML=photoHtml+
+    `<div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;color:#856404;">⚠️ Incident</div>`+
+    `<div style="font-size:0.85rem;color:#333;margin-bottom:6px;">${m.note}</div>`+
+    `<div style="font-size:0.75rem;color:#999;margin-bottom:8px;">Reported by ${m.added_by}</div>`;
+  const removeBtn=document.createElement('button');
+  removeBtn.textContent='🗑 Remove';
+  removeBtn.style.cssText='background:#fce8e6;color:#d93025;border:none;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%';
+  removeBtn.onclick=()=>deleteIncidentPin(safeId);
+  popupEl.appendChild(removeBtn);
+  const marker=L.marker([m.lat,m.lng],{icon}).bindPopup(popupEl).addTo(map);
   incidentObjects[m.id]=marker;
 }
 async function deleteIncidentPin(id){
@@ -1245,12 +1251,21 @@ async function fetchStreetSuggestions(q){
     const data=await res.json();
     const el=document.getElementById('street-autocomplete');
     if(!data.length){el.style.display='none';return;}
-    el.innerHTML=data.map(r=>{
-      // Extract just the street name part
+    // Build items using DOM to avoid any quoting issues
+    el.innerHTML='';
+    data.forEach(r=>{
       const parts=r.display_name.split(',');
       const short=parts[0].trim();
-      return '<div onclick="selectStreetSuggestion(''+short.replace(/'/g,"\'")+'''+')" style="padding:0.6rem 0.85rem;font-size:0.85rem;color:#333;cursor:pointer;border-bottom:1px solid #f0f0f0;">'+short+'<span style="font-size:0.75rem;color:#999;margin-left:0.4rem;">'+( parts[1]||'').trim()+'</span></div>';
-    }).join('');
+      const item=document.createElement('div');
+      item.style.cssText='padding:0.6rem 0.85rem;font-size:0.85rem;color:#333;cursor:pointer;border-bottom:1px solid #f0f0f0;';
+      item.textContent=short;
+      const sub=document.createElement('span');
+      sub.style.cssText='font-size:0.75rem;color:#999;margin-left:0.4rem;';
+      sub.textContent=(parts[1]||'').trim();
+      item.appendChild(sub);
+      item.addEventListener('click',()=>selectStreetSuggestion(short));
+      el.appendChild(item);
+    });
     el.style.display='block';
   }catch(e){document.getElementById('street-autocomplete').style.display='none';}
 }
