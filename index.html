@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- v3 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -723,56 +722,43 @@ async function submitCampaign() {
     document.getElementById('topbar-name').textContent=name;
     document.getElementById('topbar-campaign').textContent='· '+campaignName;
     if (isManager) { document.getElementById('admin-btn').style.display='flex'; document.getElementById('overflow-admin-btn').style.display='flex'; }
-    console.log('submitCampaign: calling showScreen map-screen');
     showScreen('map-screen');
     updateTopbarHeight();
-    console.log('submitCampaign: calling initMap');
     initMap();
-    console.log('submitCampaign: done');
   } catch(e){showEl('name-error','Error: '+e.message);btn.disabled=false;btn.textContent='Go to map →';}
 }
 
 // ── MAP ───────────────────────────────────────────────
 function initMap() {
-  console.log('initMap: start');
   showMapLoading();
   updateTopbarHeight();
-  console.log('initMap: creating map');
   map=L.map('map',{zoomControl:false}).setView([45.5017,-73.5673],13);
-  console.log('initMap: map created');
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
   map.on('click',e=>{onMapClick(e);closeSearchResults();closeOverflowMenu();});
-  console.log('initMap: calling loadExistingData');
   loadExistingData();
   subscribeRealtime();
   setupReconnect();
   updateEcoBtn();
   setInterval(()=>{if(mySession)sb.from('sessions').update({last_seen:new Date().toISOString()}).eq('id',mySession);},30000);
-  console.log('initMap: done');
 }
 
 async function loadExistingData() {
-  console.log('loadExistingData: start');
   try {
     const cid=myCampaign.id;
-    console.log('loadExistingData: campaign id =', cid);
-
+  
     try {
       const {data:bounds}=await sb.from('boundary').select('*').eq('campaign_id',cid).order('created_at',{ascending:true});
-      console.log('loadExistingData: boundary OK', bounds?.length);
       if (bounds&&bounds.length>0) bounds.forEach(b=>drawBoundaryFromPoints(b.points));
     } catch(e){console.warn('boundary load failed:',e.message);}
 
     try {
       const {data:sess}=await sb.from('sessions').select('*').eq('campaign_id',cid);
-      console.log('loadExistingData: sessions OK', sess?.length);
       if (sess) sess.forEach(s=>{if(s.id!==mySession)sessions[s.id]=s;});
     } catch(e){console.warn('sessions load failed:',e.message);}
 
     try {
       const {data:locs}=await sb.from('locations').select('*').eq('campaign_id',cid).order('recorded_at',{ascending:true});
-      console.log('loadExistingData: locations OK', locs?.length);
       if (locs){
         const bySession={};
         locs.forEach(l=>{if(!bySession[l.session_id])bySession[l.session_id]=[];bySession[l.session_id].push([l.lat,l.lng]);});
@@ -785,26 +771,22 @@ async function loadExistingData() {
 
     try {
       const {data:sm}=await sb.from('street_markers').select('*').eq('campaign_id',cid);
-      console.log('loadExistingData: street_markers OK', sm?.length);
       if (sm) sm.forEach(m=>placeStreetMarker(m));
     } catch(e){console.warn('street_markers load failed:',e.message);}
 
     try {
       const {data:rally}=await sb.from('rally_points').select('*').eq('campaign_id',cid).order('created_at',{ascending:false}).limit(1);
-      console.log('loadExistingData: rally_points OK', rally?.length);
       if (rally&&rally.length>0){ drawRallyMarker(rally[0].lat,rally[0].lng); const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='flex'; }
     } catch(e){console.warn('rally_points load failed — table may not exist yet:',e.message);}
 
     try {
       const {data:incidents}=await sb.from('incident_pins').select('*').eq('campaign_id',cid).order('created_at',{ascending:true});
-      console.log('loadExistingData: incident_pins OK', incidents?.length);
       if (incidents) incidents.forEach(m=>placeIncidentPin(m));
     } catch(e){console.warn('incident_pins load failed — table may not exist yet:',e.message);}
 
-    console.log('loadExistingData: all done, hiding loader');
     updateTeamPanel();updateLegend();if(isManager)updateAdminPanel();
-  } catch(e){console.error('loadExistingData outer error:',e);}
-  finally{console.log('loadExistingData: finally block'); hideMapLoading();}
+  } catch(e){console.error('loadExistingData error:',e);}
+  finally{hideMapLoading();}
 }
 
 function subscribeRealtime() {
@@ -1408,7 +1390,6 @@ document.getElementById('campaign-input').addEventListener('keydown',e=>{if(e.ke
 document.getElementById('street-input').addEventListener('keydown',e=>{if(e.key==='Enter')confirmStreetDone();});
 
 
-
 // ── LOADING OVERLAY ───────────────────────────────────
 function showMapLoading(){ const el=document.getElementById('map-loading');if(el)el.style.display='flex'; }
 function hideMapLoading(){ const el=document.getElementById('map-loading');if(el)el.style.display='none'; }
@@ -1734,8 +1715,7 @@ window.addEventListener('beforeunload',e=>{
 
 // Apply saved dark mode to button after DOM ready
 if(localStorage.getItem('lufa-dark')==='1'){const b=document.getElementById('dark-btn');if(b)b.textContent='☀️';const ob=document.getElementById('overflow-dark-btn');if(ob)ob.textContent='☀️ Light mode';}
-// Service worker disabled to prevent caching issues
-// Re-enable after stable release
+
 
 checkAuth();
 </script>
