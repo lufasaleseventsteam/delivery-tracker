@@ -408,6 +408,7 @@
     </div>
     <div class="topbar-right">
       <button class="icon-btn" id="dark-btn" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
+      <button class="icon-btn" id="relock-btn" onclick="enablePocketLock()" title="Lock screen" style="display:none;">🔒</button>
       <button class="icon-btn" id="team-btn" onclick="toggleTeamPanel()">👥</button>
       <button class="icon-btn" id="boundary-btn" onclick="toggleDrawMode()">✏️ Zone</button>
       <button class="icon-btn" id="rally-btn" onclick="placeRallyPoint()">🚛 Rally</button>
@@ -534,7 +535,7 @@
     <div class="pocket-icon">🔒</div>
     <div class="pocket-title">Screen Locked</div>
     <div class="pocket-sub">Your route is still being tracked. Tap the button below to unlock.</div>
-    <div class="pocket-status"><div class="pocket-pulse"></div> Tracking active</div>
+    <div class="pocket-status"><div class="pocket-pulse"></div> <span id="pocket-status-text">Tracking active</span></div>
     <button class="pocket-unlock" onclick="disablePocketLock()">Tap to Unlock</button>
   </div>
 
@@ -544,7 +545,6 @@
     <button class="summary-btn" onclick="showSummary()">📊 Summary</button>
     <button id="incident-btn" onclick="openIncidentModal()" style="flex:0 0 auto;padding:0.8rem 0.7rem;border-radius:14px;font-size:0.8rem;font-weight:700;cursor:pointer;background:#fff3cd;color:#856404;border:1.5px solid #ffc107;white-space:nowrap;" title="Report an incident">⚠️</button>
     <button id="eco-btn" onclick="setTrackingMode(trackingMode==='high'?'eco':'high')" style="flex:0 0 auto;padding:0.8rem 0.7rem;border-radius:14px;font-size:0.8rem;font-weight:700;cursor:pointer;background:#e8f5e9;color:#2e7d32;border:none;white-space:nowrap;" title="Toggle eco/high accuracy mode">🌿</button>
-    <button id="pocket-btn" onclick="enablePocketLock()" style="flex:0 0 auto;padding:0.8rem 0.7rem;border-radius:14px;font-size:0.8rem;font-weight:700;cursor:pointer;background:#f0f0f0;color:#555;border:none;white-space:nowrap;display:none;" title="Lock screen while tracking">🔒</button>
   </div>
 </div>
 
@@ -841,12 +841,13 @@ async function releaseWakeLock(){
 // ── POCKET LOCK ───────────────────────────────────────
 function enablePocketLock(){
   document.getElementById('pocket-lock').classList.add('active');
-  // Update status text with person's name
-  document.querySelector('.pocket-status').innerHTML=
-    '<div class="pocket-pulse"></div> Tracking active · '+myName;
+  document.getElementById('pocket-status-text').textContent='Tracking active · '+myName;
+  document.getElementById('relock-btn').style.display='none';
 }
 function disablePocketLock(){
   document.getElementById('pocket-lock').classList.remove('active');
+  // Show re-lock button in topbar only while tracking
+  if(isTracking) document.getElementById('relock-btn').style.display='';
 }
 // Re-acquire wake lock if page becomes visible again (e.g. user switches back)
 document.addEventListener('visibilitychange',async()=>{
@@ -865,7 +866,6 @@ function startTracking(){
   document.getElementById('mark-btn').disabled=false;
   requestNotificationPermission();
   requestWakeLock();
-  document.getElementById('pocket-btn').style.display='flex';
   // Auto-lock screen after 5 seconds
   let countdown=5;
   const statusEl=document.getElementById('topbar-status');
@@ -887,7 +887,7 @@ function stopTracking(){
   if(ecoInterval){clearInterval(ecoInterval);ecoInterval=null;}
   releaseWakeLock();
   disablePocketLock();
-  document.getElementById('pocket-btn').style.display='none';
+  document.getElementById('relock-btn').style.display='none';
   const stopTime=new Date();
   sb.from('sessions').update({tracking_end:stopTime.toISOString()}).eq('id',mySession);
   document.getElementById('main-btn').className='main-btn start';
@@ -1300,13 +1300,15 @@ async function goBackToMain(){
     if(!confirm('You are still tracking. Going back will stop tracking. Continue?'))return;
     stopTracking();
   }
-  // Reset map state
   if(map){map.remove();map=null;}
   mySession=null;myColor=null;myName=null;myCampaign=null;
+  isTracking=false;watchId=null;lastPos=null;trackingStartTime=null;
   pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
   boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
   sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};
-  // Reload campaigns and go back
+  ecoInterval=null;
+  document.getElementById('relock-btn').style.display='none';
+  document.getElementById('admin-btn').style.display='none';
   await loadCampaigns();
   document.getElementById('join-btn').disabled=false;
   document.getElementById('join-btn').textContent='Go to map →';
@@ -1320,9 +1322,14 @@ async function logOut(){
   }
   await sb.auth.signOut();
   if(map){map.remove();map=null;}
-  mySession=null;myColor=null;myName=null;myCampaign=null;myUser=null;
+  // Reset all state
+  mySession=null;myColor=null;myName=null;myCampaign=null;myUser=null;isManager=false;
+  isTracking=false;watchId=null;lastPos=null;trackingStartTime=null;
   pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
+  boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
   sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};
+  ecoInterval=null;wakeLock=null;
+  document.getElementById('relock-btn').style.display='none';
   showScreen('auth-screen');
 }
 function showEl(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
