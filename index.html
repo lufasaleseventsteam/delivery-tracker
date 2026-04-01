@@ -54,7 +54,7 @@
   .icon-btn.danger { background: #fce8e6; color: #d93025; }
 
   /* SEARCH */
-  .searchbar { position: absolute; top: 62px; left: 10px; right: 10px; z-index: 600; display: flex; gap: 0.4rem; }
+  .searchbar { position: absolute; top: var(--topbar-h, 62px); left: 10px; right: 10px; z-index: 600; display: flex; gap: 0.4rem; }
   .search-input-wrap { flex: 1; position: relative; }
   .search-input { width: 100%; padding: 0.6rem 0.75rem; border: none; border-radius: 10px; font-size: 0.9rem; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.18); background: #fff; }
   .search-results { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-top: 4px; overflow: hidden; display: none; z-index: 700; }
@@ -291,7 +291,7 @@
     .icon-btn { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
 
     /* Searchbar sits a bit lower to clear topbar */
-    .searchbar { top: 66px; left: 16px; right: 16px; }
+    .searchbar { top: var(--topbar-h, 66px); left: 16px; right: 16px; }
 
     /* Bottom bar — cap width and centre on wide screens */
     .bottombar {
@@ -407,14 +407,20 @@
       </div>
     </div>
     <div class="topbar-right">
-      <button class="icon-btn" id="dark-btn" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
       <button class="icon-btn" id="relock-btn" onclick="enablePocketLock()" title="Lock screen" style="display:none;">🔒</button>
       <button class="icon-btn" id="team-btn" onclick="toggleTeamPanel()">👥</button>
-      <button class="icon-btn" id="boundary-btn" onclick="toggleDrawMode()">✏️ Zone</button>
-      <button class="icon-btn" id="rally-btn" onclick="placeRallyPoint()">🚛 Rally</button>
       <button class="icon-btn danger" id="admin-btn" onclick="toggleAdminPanel()" style="display:none">⚙️</button>
-      <button class="icon-btn danger" onclick="logOut()">Sign out</button>
+      <button class="icon-btn" id="overflow-btn" onclick="toggleOverflowMenu()" title="More options">⋯</button>
     </div>
+  </div>
+
+  <!-- OVERFLOW MENU -->
+  <div class="overflow-menu" id="overflow-menu">
+    <button class="overflow-item" onclick="closeOverflowMenu();placeRallyPoint()">🚛 Rally point</button>
+    <button class="overflow-item" id="overflow-zone-btn" onclick="closeOverflowMenu();toggleDrawMode()">✏️ Zone</button>
+    <button class="overflow-item" id="overflow-dark-btn" onclick="closeOverflowMenu();toggleDarkMode()">🌙 Dark mode</button>
+    <button class="overflow-item danger" id="overflow-admin-btn" onclick="closeOverflowMenu();toggleAdminPanel()" style="display:none">⚙️ Manage team</button>
+    <button class="overflow-item danger" onclick="closeOverflowMenu();logOut()">⏏ Sign out</button>
   </div>
 
   <div class="searchbar">
@@ -422,7 +428,8 @@
       <input class="search-input" id="search-input" type="text" placeholder="Search address or neighbourhood..." autocomplete="off" oninput="onSearchInput()" onkeydown="onSearchKey(event)"/>
       <div class="search-results" id="search-results"></div>
     </div>
-    <button class="locate-btn" onclick="jumpToMyLocation()">📍</button>
+    <button class="locate-btn" onclick="jumpToMyLocation()" title="Centre on my location">📍</button>
+    <button class="locate-btn" id="center-rally-btn" onclick="centreOnRally()" title="Centre on rally point" style="display:none;">🚛</button>
   </div>
 
   <div id="map"></div>
@@ -695,7 +702,7 @@ async function submitCampaign() {
     document.getElementById('my-dot').style.background=myColor;
     document.getElementById('topbar-name').textContent=name;
     document.getElementById('topbar-campaign').textContent='· '+campaignName;
-    if (isManager) document.getElementById('admin-btn').style.display='flex';
+    if (isManager) { document.getElementById('admin-btn').style.display='flex'; document.getElementById('overflow-admin-btn').style.display='flex'; }
     showScreen('map-screen');
     initMap();
   } catch(e){showEl('name-error','Error: '+e.message);btn.disabled=false;btn.textContent='Go to map →';}
@@ -704,10 +711,11 @@ async function submitCampaign() {
 // ── MAP ───────────────────────────────────────────────
 function initMap() {
   showMapLoading();
+  updateTopbarHeight();
   map=L.map('map',{zoomControl:false}).setView([45.5017,-73.5673],13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
-  map.on('click',e=>{onMapClick(e);closeSearchResults();});
+  map.on('click',e=>{onMapClick(e);closeSearchResults();closeOverflowMenu();});
   loadExistingData();
   subscribeRealtime();
   setupReconnect();
@@ -735,7 +743,7 @@ async function loadExistingData() {
     if (sm) sm.forEach(m=>placeStreetMarker(m));
     // Load rally point
     const {data:rally}=await sb.from('rally_points').select('*').eq('campaign_id',cid).order('created_at',{ascending:false}).limit(1);
-    if (rally&&rally.length>0) drawRallyMarker(rally[0].lat,rally[0].lng);
+    if (rally&&rally.length>0){ drawRallyMarker(rally[0].lat,rally[0].lng); const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='flex'; }
     // Load incident pins (all campaigns — they persist)
     const {data:incidents}=await sb.from('incident_pins').select('*').eq('campaign_id',cid).order('created_at',{ascending:true});
     if (incidents) incidents.forEach(m=>placeIncidentPin(m));
@@ -1000,6 +1008,7 @@ async function saveRallyPoint(lat,lng){
 }
 
 function drawRallyMarker(lat,lng){
+  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='flex';
   if(rallyMarker)map.removeLayer(rallyMarker);
   const icon=L.divIcon({
     className:'',
@@ -1022,6 +1031,7 @@ async function removeRallyPoint(){
   closeRallyModal();
   await sb.from('rally_points').delete().eq('campaign_id',myCampaign.id);
   if(rallyMarker){map.removeLayer(rallyMarker);rallyMarker=null;}
+  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
   showToast('Rally point removed');
 }
 
@@ -1305,7 +1315,8 @@ async function goBackToMain(){
   isTracking=false;watchId=null;lastPos=null;trackingStartTime=null;
   pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
   boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
-  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};
+  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};overflowMenuVisible=false;
+  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
   ecoInterval=null;
   document.getElementById('relock-btn').style.display='none';
   document.getElementById('admin-btn').style.display='none';
@@ -1327,7 +1338,8 @@ async function logOut(){
   isTracking=false;watchId=null;lastPos=null;trackingStartTime=null;
   pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
   boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
-  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};
+  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};overflowMenuVisible=false;
+  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
   ecoInterval=null;wakeLock=null;
   document.getElementById('relock-btn').style.display='none';
   showScreen('auth-screen');
@@ -1452,11 +1464,29 @@ function setupReconnect(){
   });
 }
 
+
+// ── OVERFLOW MENU ─────────────────────────────────────
+let overflowMenuVisible=false;
+function toggleOverflowMenu(){
+  overflowMenuVisible=!overflowMenuVisible;
+  document.getElementById('overflow-menu').classList.toggle('visible',overflowMenuVisible);
+  // Close other panels
+  if(overflowMenuVisible){
+    if(teamPanelVisible){teamPanelVisible=false;document.getElementById('team-panel').classList.remove('visible');}
+    if(adminPanelVisible){adminPanelVisible=false;document.getElementById('admin-panel').classList.remove('visible');}
+  }
+}
+function closeOverflowMenu(){
+  overflowMenuVisible=false;
+  document.getElementById('overflow-menu').classList.remove('visible');
+}
+// Close overflow menu on map tap
 // ── DARK MODE ─────────────────────────────────────────
 function toggleDarkMode(){
   const dark=document.body.classList.toggle('dark');
   localStorage.setItem('lufa-dark',dark?'1':'0');
-  document.getElementById('dark-btn').textContent=dark?'☀️':'🌙';
+  const darkBtn=document.getElementById('dark-btn'); if(darkBtn) darkBtn.textContent=dark?'☀️':'🌙';
+  const overflowDarkBtn=document.getElementById('overflow-dark-btn'); if(overflowDarkBtn) overflowDarkBtn.textContent=dark?'☀️ Light mode':'🌙 Dark mode';
 }
 (function(){
   if(localStorage.getItem('lufa-dark')==='1'){
@@ -1625,7 +1655,7 @@ window.addEventListener('beforeunload',e=>{
 });
 
 // Apply saved dark mode to button after DOM ready
-if(localStorage.getItem('lufa-dark')==='1'){const b=document.getElementById('dark-btn');if(b)b.textContent='☀️';}
+if(localStorage.getItem('lufa-dark')==='1'){const b=document.getElementById('dark-btn');if(b)b.textContent='☀️';const ob=document.getElementById('overflow-dark-btn');if(ob)ob.textContent='☀️ Light mode';}
 // ── SERVICE WORKER ────────────────────────────────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
