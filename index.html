@@ -726,29 +726,47 @@ function initMap() {
 async function loadExistingData() {
   try {
     const cid=myCampaign.id;
-    const {data:bounds}=await sb.from('boundary').select('*').eq('campaign_id',cid).order('created_at',{ascending:true});
-    if (bounds&&bounds.length>0) bounds.forEach(b=>drawBoundaryFromPoints(b.points));
-    const {data:sess}=await sb.from('sessions').select('*').eq('campaign_id',cid);
-    if (sess) sess.forEach(s=>{if(s.id!==mySession)sessions[s.id]=s;});
-    const {data:locs}=await sb.from('locations').select('*').eq('campaign_id',cid).order('recorded_at',{ascending:true});
-    if (locs){
-      const bySession={};
-      locs.forEach(l=>{if(!bySession[l.session_id])bySession[l.session_id]=[];bySession[l.session_id].push([l.lat,l.lng]);});
-      Object.entries(bySession).forEach(([sid,pts])=>{
-        const s=sid===mySession?{color:myColor}:sessions[sid];
-        if(s){locationPoints[sid]=pts;drawPath(sid,pts,s.color);}
-      });
-    }
-    const {data:sm}=await sb.from('street_markers').select('*').eq('campaign_id',cid);
-    if (sm) sm.forEach(m=>placeStreetMarker(m));
-    // Load rally point
-    const {data:rally}=await sb.from('rally_points').select('*').eq('campaign_id',cid).order('created_at',{ascending:false}).limit(1);
-    if (rally&&rally.length>0){ drawRallyMarker(rally[0].lat,rally[0].lng); const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='flex'; }
-    // Load incident pins (all campaigns — they persist)
-    const {data:incidents}=await sb.from('incident_pins').select('*').eq('campaign_id',cid).order('created_at',{ascending:true});
-    if (incidents) incidents.forEach(m=>placeIncidentPin(m));
+
+    // Each query wrapped independently so one failure doesn't block others
+    try {
+      const {data:bounds}=await sb.from('boundary').select('*').eq('campaign_id',cid).order('created_at',{ascending:true});
+      if (bounds&&bounds.length>0) bounds.forEach(b=>drawBoundaryFromPoints(b.points));
+    } catch(e){console.warn('boundary load failed:',e.message);}
+
+    try {
+      const {data:sess}=await sb.from('sessions').select('*').eq('campaign_id',cid);
+      if (sess) sess.forEach(s=>{if(s.id!==mySession)sessions[s.id]=s;});
+    } catch(e){console.warn('sessions load failed:',e.message);}
+
+    try {
+      const {data:locs}=await sb.from('locations').select('*').eq('campaign_id',cid).order('recorded_at',{ascending:true});
+      if (locs){
+        const bySession={};
+        locs.forEach(l=>{if(!bySession[l.session_id])bySession[l.session_id]=[];bySession[l.session_id].push([l.lat,l.lng]);});
+        Object.entries(bySession).forEach(([sid,pts])=>{
+          const s=sid===mySession?{color:myColor}:sessions[sid];
+          if(s){locationPoints[sid]=pts;drawPath(sid,pts,s.color);}
+        });
+      }
+    } catch(e){console.warn('locations load failed:',e.message);}
+
+    try {
+      const {data:sm}=await sb.from('street_markers').select('*').eq('campaign_id',cid);
+      if (sm) sm.forEach(m=>placeStreetMarker(m));
+    } catch(e){console.warn('street_markers load failed:',e.message);}
+
+    try {
+      const {data:rally}=await sb.from('rally_points').select('*').eq('campaign_id',cid).order('created_at',{ascending:false}).limit(1);
+      if (rally&&rally.length>0){ drawRallyMarker(rally[0].lat,rally[0].lng); const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='flex'; }
+    } catch(e){console.warn('rally_points load failed — table may not exist yet:',e.message);}
+
+    try {
+      const {data:incidents}=await sb.from('incident_pins').select('*').eq('campaign_id',cid).order('created_at',{ascending:true});
+      if (incidents) incidents.forEach(m=>placeIncidentPin(m));
+    } catch(e){console.warn('incident_pins load failed — table may not exist yet:',e.message);}
+
     updateTeamPanel();updateLegend();if(isManager)updateAdminPanel();
-  } catch(e){console.error(e);}
+  } catch(e){console.error('loadExistingData error:',e);}
   finally{hideMapLoading();}
 }
 
