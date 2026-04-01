@@ -1500,7 +1500,29 @@ function setupReconnect(){
 }
 
 
-// ── OVERFLOW MENU ─────────────────────────────────────
+// ── TOPBAR HEIGHT (dynamic searchbar positioning) ────────────────
+function updateTopbarHeight(){
+  const tb=document.querySelector('.topbar');
+  if(tb){
+    const h=tb.offsetHeight;
+    const ms=document.getElementById('map-screen');
+    if(ms) ms.style.setProperty('--topbar-h',(h+6)+'px');
+  }
+}
+window.addEventListener('resize',updateTopbarHeight);
+
+// ── CENTRE ON RALLY ───────────────────────────────────────────────
+function centreOnRally(){
+  if(rallyMarker){
+    const ll=rallyMarker.getLatLng();
+    map.setView([ll.lat,ll.lng],16);
+    rallyMarker.openPopup();
+  } else {
+    showToast('No rally point set yet');
+  }
+}
+
+// ── OVERFLOW MENU ─────────────────────────────────────────
 let overflowMenuVisible=false;
 function toggleOverflowMenu(){
   overflowMenuVisible=!overflowMenuVisible;
