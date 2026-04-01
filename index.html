@@ -91,13 +91,13 @@
   /* MODAL */
   .modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.45); z-index: 800; display: none; align-items: flex-end; justify-content: center; }
   .modal-overlay.visible { display: flex; }
-  .modal { background: #fff; border-radius: 20px 20px 0 0; padding: 1.5rem; width: 100%; max-width: 500px; }
-  .modal-title { font-size: 1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem; }
-  .modal-sub { font-size: 0.85rem; color: #666; margin-bottom: 1rem; }
+  .modal { background: #fff; border-radius: 20px 20px 0 0; padding: 1.25rem; width: 100%; max-width: 500px; max-height: 85dvh; overflow-y: auto; }
+  .modal-title { font-size: 0.95rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.2rem; }
+  .modal-sub { font-size: 0.82rem; color: #666; margin-bottom: 0.75rem; }
   .modal input { width: 100%; padding: 0.85rem 1rem; border: 1.5px solid #ddd; border-radius: 12px; font-size: 1rem; outline: none; margin-bottom: 0.75rem; }
   .modal input:focus { border-color: #4d8c3f; }
   .modal-btns { display: flex; gap: 0.5rem; }
-  .modal-btns button { flex: 1; padding: 0.85rem; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+  .modal-btns button { flex: 1; padding: 0.65rem 0.5rem; border: none; border-radius: 12px; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
   .modal-cancel { background: #f0f0f0; color: #333; }
   .modal-confirm { background: #4d8c3f; color: #fff; }
   .bag-counter { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
@@ -520,7 +520,7 @@
     <div class="modal">
       <div class="modal-title">✏️ Zone</div>
       <div class="modal-sub" id="zone-modal-sub">What would you like to do with the delivery zone?</div>
-      <div class="modal-btns" style="flex-direction:column;gap:0.5rem;" id="zone-modal-btns">
+      <div class="modal-btns" style="flex-direction:column;gap:0.4rem;" id="zone-modal-btns">
       </div>
     </div>
   </div>
@@ -530,11 +530,11 @@
     <div class="modal">
       <div class="modal-title">🚛 Set Rally & Reload Point</div>
       <div class="modal-sub" id="rally-modal-sub">Choose how to place the pin.</div>
-      <div class="modal-btns" style="flex-direction:column;gap:0.5rem;" id="rally-choice-btns">
-        <button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;">
+      <div class="modal-btns" style="flex-direction:column;gap:0.4rem;" id="rally-choice-btns">
+        <button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">
           📍 Use my current GPS location
         </button>
-        <button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;">
+        <button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">
           👆 Tap on the map to place it
         </button>
         <button class="modal-cancel" onclick="closeRallyModal()">Cancel</button>
@@ -1009,15 +1009,15 @@ function placeRallyPoint(){
   if(rallyMarker){
     document.getElementById('rally-modal-sub').textContent='Rally point is already set. Move it or remove it.';
     document.getElementById('rally-choice-btns').innerHTML=
-      '<button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;">📍 Move to my GPS location</button>'+
-      '<button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;">👆 Tap on map to move it</button>'+
+      '<button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">📍 Move to my GPS location</button>'+
+      '<button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">👆 Tap on map to move it</button>'+
       '<button class="modal-cancel" style="background:#fce8e6;color:#d93025;" onclick="removeRallyPoint()">🗑 Remove rally point</button>'+
       '<button class="modal-cancel" onclick="closeRallyModal()">Cancel</button>';
   } else {
     document.getElementById('rally-modal-sub').textContent='Choose how to place the pin.';
     document.getElementById('rally-choice-btns').innerHTML=
-      '<button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;">📍 Use my current GPS location</button>'+
-      '<button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;">👆 Tap on the map to place it</button>'+
+      '<button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">📍 Use my current GPS location</button>'+
+      '<button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">👆 Tap on the map to place it</button>'+
       '<button class="modal-cancel" onclick="closeRallyModal()">Cancel</button>';
   }
   document.getElementById('rally-modal-overlay').classList.add('visible');
