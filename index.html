@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- v3 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -703,24 +704,32 @@ async function submitCampaign() {
     document.getElementById('topbar-name').textContent=name;
     document.getElementById('topbar-campaign').textContent='· '+campaignName;
     if (isManager) { document.getElementById('admin-btn').style.display='flex'; document.getElementById('overflow-admin-btn').style.display='flex'; }
+    console.log('submitCampaign: calling showScreen map-screen');
     showScreen('map-screen');
+    console.log('submitCampaign: calling initMap');
     initMap();
+    console.log('submitCampaign: done');
   } catch(e){showEl('name-error','Error: '+e.message);btn.disabled=false;btn.textContent='Go to map →';}
 }
 
 // ── MAP ───────────────────────────────────────────────
 function initMap() {
+  console.log('initMap: start');
   showMapLoading();
   updateTopbarHeight();
+  console.log('initMap: creating map');
   map=L.map('map',{zoomControl:false}).setView([45.5017,-73.5673],13);
+  console.log('initMap: map created');
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
   map.on('click',e=>{onMapClick(e);closeSearchResults();closeOverflowMenu();});
+  console.log('initMap: calling loadExistingData');
   loadExistingData();
   subscribeRealtime();
   setupReconnect();
   updateEcoBtn();
   setInterval(()=>{if(mySession)sb.from('sessions').update({last_seen:new Date().toISOString()}).eq('id',mySession);},30000);
+  console.log('initMap: done');
 }
 
 async function loadExistingData() {

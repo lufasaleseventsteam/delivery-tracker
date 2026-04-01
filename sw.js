@@ -1,5 +1,5 @@
 // Lufa Delivery Service Worker
-const CACHE_NAME = 'lufa-delivery-v1';
+const CACHE_NAME = 'lufa-delivery-v3';
 const ASSETS = [
   '/delivery-tracker/',
   '/delivery-tracker/index.html',
