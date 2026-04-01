@@ -147,7 +147,7 @@
   .legend-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
   .legend-line { width: 20px; height: 3px; border-radius: 2px; flex-shrink: 0; }
   .legend-name { font-size: 0.8rem; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .draw-hint { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); background: rgba(251,188,4,0.95); color: #1a1a1a; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; z-index: 600; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; }
+  .draw-hint { position: absolute; top: var(--topbar-h,58px); left: 50%; transform: translateX(-50%); background: rgba(251,188,4,0.97); color: #1a1a1a; padding: 0.6rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; z-index: 700; box-shadow: 0 2px 8px rgba(0,0,0,0.2); display: none; align-items:center; gap:0.75rem; white-space:nowrap; }
   .team-panel { position: absolute; top: 110px; right: 10px; background: rgba(255,255,255,0.97); border-radius: 12px; padding: 0.75rem; z-index: 500; box-shadow: 0 2px 12px rgba(0,0,0,0.15); min-width: 160px; display: none; }
   .team-panel.visible { display: block; }
   .team-panel-title { font-size: 0.7rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
@@ -341,7 +341,7 @@
 
     /* Draw controls */
     #draw-controls { top: 120px; }
-    .draw-hint { top: 120px; }
+    .draw-hint { top: var(--topbar-h,66px); }
     .rally-tap-hint { top: 120px; }
     #rally-tap-hint { top: 120px; }
   }
@@ -447,10 +447,10 @@
   </div>
 
   <div id="map"></div>
-  <div class="draw-hint" id="draw-hint">Tap map to add points to your zone</div>
-  <div id="draw-controls" style="display:none;position:absolute;top:110px;left:50%;transform:translateX(-50%);z-index:600;display:none;gap:0.5rem;flex-direction:row;">
-    <button onclick="undoLastPoint()" style="background:#fff;border:none;border-radius:10px;padding:0.45rem 0.85rem;font-size:0.8rem;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.15);color:#333">↩ Undo</button>
-    <button onclick="cancelDraw()" style="background:#fce8e6;border:none;border-radius:10px;padding:0.45rem 0.85rem;font-size:0.8rem;font-weight:600;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.15);color:#d93025">✕ Cancel</button>
+  <div class="draw-hint" id="draw-hint">
+    <span>✏️ Tap map to draw zone</span>
+    <button onclick="undoLastPoint()" style="background:rgba(0,0,0,0.15);border:none;color:#1a1a1a;border-radius:8px;padding:4px 10px;cursor:pointer;font-weight:700;font-size:0.8rem;flex-shrink:0;">↩ Undo</button>
+    <button onclick="cancelDraw()" style="background:#fff;border:none;color:#c0392b;border-radius:8px;padding:4px 12px;cursor:pointer;font-weight:700;font-size:0.8rem;flex-shrink:0;">Cancel</button>
   </div>
 
   <div class="legend" id="legend">
@@ -543,9 +543,9 @@
   </div>
 
   <!-- RALLY TAP HINT -->
-  <div id="rally-tap-hint" style="display:none;position:absolute;top:110px;left:50%;transform:translateX(-50%);background:rgba(66,133,244,0.95);color:#fff;padding:0.5rem 1rem;border-radius:20px;font-size:0.85rem;font-weight:600;z-index:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
-    Tap anywhere on the map to place the 🚛 rally pin
-    <button onclick="cancelRallyTap()" style="margin-left:0.75rem;background:rgba(255,255,255,0.25);border:none;color:#fff;border-radius:8px;padding:2px 8px;cursor:pointer;font-weight:700;">✕</button>
+  <div id="rally-tap-hint" style="display:none;position:absolute;top:var(--topbar-h,58px);left:50%;transform:translateX(-50%);background:rgba(66,133,244,0.97);color:#fff;padding:0.6rem 1rem;border-radius:20px;font-size:0.85rem;font-weight:600;z-index:700;box-shadow:0 2px 8px rgba(0,0,0,0.25);display:none;align-items:center;gap:0.75rem;white-space:nowrap;">
+    <span>👆 Tap map to place 🚛 rally pin</span>
+    <button onclick="cancelRallyTap()" style="background:#fff;border:none;color:#4285f4;border-radius:8px;padding:4px 12px;cursor:pointer;font-weight:700;font-size:0.8rem;flex-shrink:0;">Cancel</button>
   </div>
 
   <div id="map-loading" class="map-loading"><div class="map-loading-spinner"></div><div class="map-loading-text">Loading map…</div></div>
@@ -1039,14 +1039,22 @@ function rallyUseGPS(){
 function rallyUseTap(){
   closeRallyModal();
   isRallyTapMode=true;
-  document.getElementById('rally-tap-hint').style.display='block';
-  document.getElementById('rally-btn').classList.add('active');
+  const hint=document.getElementById('rally-tap-hint');
+  hint.style.display='flex';
+  document.getElementById('rally-btn') && document.getElementById('rally-btn').classList.add('active');
+  // Update overflow menu to show cancel option
+  const rallyBtn=document.querySelector('#overflow-menu .overflow-item');
+  if(rallyBtn){ rallyBtn.textContent='✕ Cancel rally placement'; rallyBtn.onclick=()=>{closeOverflowMenu();cancelRallyTap();}; }
 }
 
 function cancelRallyTap(){
   isRallyTapMode=false;
-  document.getElementById('rally-tap-hint').style.display='none';
-  document.getElementById('rally-btn').classList.remove('active');
+  const hint=document.getElementById('rally-tap-hint');
+  hint.style.display='none';
+  document.getElementById('rally-btn') && document.getElementById('rally-btn').classList.remove('active');
+  // Restore overflow menu
+  const rallyBtn=document.querySelector('#overflow-menu .overflow-item');
+  if(rallyBtn){ rallyBtn.textContent='🚛 Rally point'; rallyBtn.onclick=()=>{closeOverflowMenu();placeRallyPoint();}; }
 }
 
 async function saveRallyPoint(lat,lng){
@@ -1230,22 +1238,19 @@ function closeZoneModal(){
 function startDrawMode(replaceExisting=false){
   isDrawMode=true;
   const mainBtn=document.getElementById('main-btn');
-  document.getElementById('boundary-btn').classList.add('active');
-  document.getElementById('draw-hint').style.display='block';
-  document.getElementById('draw-controls').style.display='flex';
+  document.getElementById('draw-hint').style.display='flex';
   mainBtn.className='main-btn done-draw';mainBtn.textContent='✓ Finish zone';mainBtn.onclick=finishBoundary;
   document.getElementById('mark-btn').disabled=true;
   boundaryPoints=[];boundaryMarkers.forEach(m=>map.removeLayer(m));boundaryMarkers=[];
   if(boundaryLine){map.removeLayer(boundaryLine);boundaryLine=null;}
-  // Only remove existing polygon if replacing, not adding
   if(replaceExisting&&boundaryPolygon){map.removeLayer(boundaryPolygon);boundaryPolygon=null;}
+  // Update overflow menu to show cancel
+  const zoneBtn=document.getElementById('overflow-zone-btn');
+  if(zoneBtn){zoneBtn.textContent='✕ Cancel zone drawing';zoneBtn.onclick=()=>{closeOverflowMenu();cancelDraw();};}
 }
 function cancelDraw(){
   isDrawMode=false;
-  document.getElementById('boundary-btn').classList.remove('active');
   document.getElementById('draw-hint').style.display='none';
-  document.getElementById('draw-controls').style.display='none';
-  // Clean up any in-progress points
   boundaryMarkers.forEach(m=>map.removeLayer(m));boundaryMarkers=[];
   if(boundaryLine){map.removeLayer(boundaryLine);boundaryLine=null;}
   boundaryPoints=[];
@@ -1253,6 +1258,9 @@ function cancelDraw(){
   document.getElementById('main-btn').textContent='▶ Start';
   document.getElementById('main-btn').onclick=toggleTracking;
   document.getElementById('mark-btn').disabled=!isTracking;
+  // Restore overflow menu
+  const zoneBtn=document.getElementById('overflow-zone-btn');
+  if(zoneBtn){zoneBtn.textContent='✏️ Zone';zoneBtn.onclick=()=>{closeOverflowMenu();toggleDrawMode();};}
 }
 function undoLastPoint(){
   if(!boundaryPoints.length)return;
