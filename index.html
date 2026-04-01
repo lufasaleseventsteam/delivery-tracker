@@ -1713,14 +1713,8 @@ window.addEventListener('beforeunload',e=>{
 
 // Apply saved dark mode to button after DOM ready
 if(localStorage.getItem('lufa-dark')==='1'){const b=document.getElementById('dark-btn');if(b)b.textContent='☀️';const ob=document.getElementById('overflow-dark-btn');if(ob)ob.textContent='☀️ Light mode';}
-// ── SERVICE WORKER ────────────────────────────────────
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/delivery-tracker/sw.js')
-      .then(reg => console.log('SW registered:', reg.scope))
-      .catch(err => console.log('SW failed:', err));
-  });
-}
+// Service worker disabled to prevent caching issues
+// Re-enable after stable release
 
 checkAuth();
 </script>
