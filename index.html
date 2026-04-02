@@ -17,6 +17,7 @@
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
   .screen { display: none; flex-direction: column; height: 100dvh; align-items: center; justify-content: center; padding: 2rem; background: #fff; }
   .screen.active { display: flex; }
+  #campaign-screen { justify-content: flex-start; overflow-y: auto; padding-top: 2rem; padding-bottom: 2rem; }
   #map-screen, #summary-screen { padding: 0; }
   .logo { object-fit: contain; margin-bottom: 1.25rem; }
   .screen-title { font-size: 1.3rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem; text-align: center; }
@@ -32,12 +33,12 @@
   .green-btn { padding: 0.85rem; background: #4d8c3f; color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; }
   .green-btn:disabled { background: #aaa; }
   .signed-in-as { font-size: 0.8rem; color: #888; margin-bottom: 0.5rem; text-align: center; }
-  .campaign-list { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 0.5rem; max-height: 180px; overflow-y: auto; margin-bottom: 0.5rem; }
+  .campaign-list { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 0.5rem; max-height: 260px; overflow-y: auto; margin-bottom: 0.75rem; }
   .campaign-item { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 1rem; border: 1.5px solid #ddd; border-radius: 12px; cursor: pointer; transition: all 0.15s; }
   .campaign-item:hover, .campaign-item.selected { border-color: #4d8c3f; background: #f0f7ee; }
   .campaign-item-name { font-size: 0.95rem; font-weight: 600; color: #1a1a1a; }
   .campaign-item-date { font-size: 0.75rem; color: #999; }
-  .or-divider { font-size: 0.8rem; color: #999; text-align: center; width: 100%; max-width: 300px; margin: 0.25rem 0; }
+  .or-divider { font-size: 0.8rem; color: #999; text-align: center; width: 100%; max-width: 300px; margin: 0.5rem 0; }
 
   /* MAP */
   #map-screen { position: relative; }
@@ -224,9 +225,6 @@
   body.dark .map-loading-text { color:#aaa; }
 
   /* ECO BTN ACTIVE STATE */
-  #eco-btn.eco-active { background:#1b4d1b;color:#a5d6a7; }
-  body.dark #eco-btn { background:#1a2e1a;color:#7ec87e; }
-  body.dark #eco-btn.eco-active { background:#0d1f0d;color:#a5d6a7; }
 
   /* INCIDENT MODAL IMAGE PREVIEW */
   #incident-preview { width:100%;max-height:140px;object-fit:cover;border-radius:10px;margin-bottom:0.75rem;display:none; }
@@ -297,7 +295,8 @@
     #campaign-screen > button {
       max-width: 340px !important;
     }
-    .campaign-list { max-height: 240px; }
+    .campaign-list { max-height: 300px; }
+    #campaign-screen { justify-content: center; overflow-y: auto; }
 
     /* Topbar — more breathing room */
     .topbar { padding: 0.6rem 1.5rem; }
@@ -380,7 +379,7 @@
   <div class="screen-title" style="font-size:1.1rem;margin-bottom:0.15rem">Select or create a campaign</div>
   <div class="signed-in-as" id="signed-in-as"></div>
   <div class="campaign-list" id="campaign-list"></div>
-  <div class="or-divider" id="or-divider" style="display:none">— or create new —</div>
+  <div class="or-divider" id="or-divider" style="display:none;">— or create new —</div>
   <div class="form-block">
     <div class="form-label">Campaign name</div>
     <input type="text" id="campaign-input" placeholder="e.g. Rosemont Week 1" maxlength="40" autocomplete="off"/>
@@ -570,7 +569,6 @@
     <button class="mark-btn" id="mark-btn" onclick="openModal()" disabled>✅ Done</button>
     <button class="summary-btn" onclick="showSummary()">📊 Summary</button>
     <button id="incident-btn" onclick="openIncidentModal()" style="flex:0 0 auto;padding:0.8rem 0.7rem;border-radius:14px;font-size:0.8rem;font-weight:700;cursor:pointer;background:#fff3cd;color:#856404;border:1.5px solid #ffc107;white-space:nowrap;" title="Report an incident">⚠️</button>
-    <button id="eco-btn" onclick="setTrackingMode(trackingMode==='high'?'eco':'high')" style="flex:0 0 auto;padding:0.8rem 0.7rem;border-radius:14px;font-size:0.8rem;font-weight:700;cursor:pointer;background:#e8f5e9;color:#2e7d32;border:none;white-space:nowrap;" title="Toggle eco/high accuracy mode">🌿</button>
   </div>
 </div>
 
@@ -664,11 +662,14 @@ async function loadCampaigns() {
   const orDiv = document.getElementById('or-divider');
   if (data && data.length > 0) {
     orDiv.style.display = 'block';
-    list.innerHTML = data.map(c =>
-      '<div class="campaign-item" onclick="selectCampaign(\'' + c.id + '\',\'' + c.name.replace(/'/g,"\'") + '\',' + (c.bag_target||1600) + ',event)">' +
-      '<span class="campaign-item-name">' + c.name + '</span>' +
-      '<span class="campaign-item-date">' + new Date(c.created_at).toLocaleDateString() + '</span></div>'
-    ).join('');
+    list.innerHTML = data.map(c => {
+      const safeName = c.name.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+      const date = new Date(c.created_at).toLocaleDateString();
+      const target = c.bag_target||1600;
+      return '<div class="campaign-item" onclick="selectCampaign(\'' + c.id + '\',\'' + safeName + '\',' + target + ',event)">' +
+        '<span class="campaign-item-name">' + c.name + '</span>' +
+        '<span class="campaign-item-date">' + date + '</span></div>';
+    }).join('');
   } else { orDiv.style.display='none'; list.innerHTML=''; }
 }
 
@@ -739,8 +740,15 @@ function initMap() {
   loadExistingData();
   subscribeRealtime();
   setupReconnect();
-  updateEcoBtn();
-  setInterval(()=>{if(mySession)sb.from('sessions').update({last_seen:new Date().toISOString()}).eq('id',mySession);},30000);
+  setInterval(()=>{
+    if(mySession){
+      sb.from('sessions').update({last_seen:new Date().toISOString()}).eq('id',mySession);
+      // Re-broadcast last position so late joiners can see it immediately
+      if(isTracking && lastPos){
+        sb.from('locations').insert({session_id:mySession,lat:lastPos.lat,lng:lastPos.lng,campaign_id:myCampaign.id});
+      }
+    }
+  },10000);
 }
 
 async function loadExistingData() {
@@ -753,21 +761,38 @@ async function loadExistingData() {
     } catch(e){console.warn('boundary load failed:',e.message);}
 
     try {
+      // Load sessions and locations together so we never miss someone
+      // even if they joined a split second ago
       const {data:sess}=await sb.from('sessions').select('*').eq('campaign_id',cid);
       if (sess) sess.forEach(s=>{if(s.id!==mySession)sessions[s.id]=s;});
-    } catch(e){console.warn('sessions load failed:',e.message);}
 
-    try {
       const {data:locs}=await sb.from('locations').select('*').eq('campaign_id',cid).order('recorded_at',{ascending:true});
-      if (locs){
+      if (locs && locs.length > 0){
         const bySession={};
-        locs.forEach(l=>{if(!bySession[l.session_id])bySession[l.session_id]=[];bySession[l.session_id].push([l.lat,l.lng]);});
+        locs.forEach(l=>{
+          if(!bySession[l.session_id])bySession[l.session_id]=[];
+          bySession[l.session_id].push([l.lat,l.lng]);
+        });
         Object.entries(bySession).forEach(([sid,pts])=>{
-          const s=sid===mySession?{color:myColor}:sessions[sid];
-          if(s){locationPoints[sid]=pts;drawPath(sid,pts,s.color);}
+          // Use local session cache, or fall back to fetching from sessions list
+          let s = sid===mySession ? {color:myColor,name:myName} : sessions[sid];
+          // If still not found, try to find in the loaded sessions array directly
+          if(!s && sess) {
+            const found = sess.find(x=>x.id===sid);
+            if(found){ sessions[found.id]=found; s=found; }
+          }
+          if(s){
+            locationPoints[sid]=pts;
+            drawPath(sid,pts,s.color);
+            // Place current position dot at last known point
+            if(pts.length>0){
+              const last=pts[pts.length-1];
+              updateMarker(sid,last[0],last[1],s.color,s.name||'');
+            }
+          }
         });
       }
-    } catch(e){console.warn('locations load failed:',e.message);}
+    } catch(e){console.warn('sessions/locations load failed:',e.message);}
 
     try {
       const {data:sm}=await sb.from('street_markers').select('*').eq('campaign_id',cid);
@@ -792,8 +817,23 @@ async function loadExistingData() {
 function subscribeRealtime() {
   const cid=myCampaign.id;
   sb.channel('loc-ch').on('postgres_changes',{event:'INSERT',schema:'public',table:'locations',filter:'campaign_id=eq.'+cid},payload=>{
+    markRealtimeActivity();
     const loc=payload.new; if(loc.session_id===mySession)return;
-    const s=sessions[loc.session_id]; if(!s)return;
+    let s=sessions[loc.session_id];
+    if(!s){
+      // Session not loaded yet — fetch it then update
+      sb.from('sessions').select('*').eq('id',loc.session_id).single().then(({data})=>{
+        if(data){
+          sessions[data.id]=data;
+          updateTeamPanel();updateLegend();
+          if(!Array.isArray(locationPoints[data.id]))locationPoints[data.id]=[];
+          locationPoints[data.id].push([loc.lat,loc.lng]);
+          drawPath(data.id,locationPoints[data.id],data.color);
+          updateMarker(data.id,loc.lat,loc.lng,data.color,data.name);
+        }
+      });
+      return;
+    }
     if(!Array.isArray(locationPoints[loc.session_id]))locationPoints[loc.session_id]=[];
     locationPoints[loc.session_id].push([loc.lat,loc.lng]);
     drawPath(loc.session_id,locationPoints[loc.session_id],s.color);
@@ -801,12 +841,15 @@ function subscribeRealtime() {
   }).subscribe();
 
   sb.channel('sess-ch').on('postgres_changes',{event:'INSERT',schema:'public',table:'sessions',filter:'campaign_id=eq.'+cid},payload=>{
+    markRealtimeActivity();
     const s=payload.new; if(s.id===mySession)return;
     sessions[s.id]=s;updateTeamPanel();updateLegend();if(isManager)updateAdminPanel();
     showToast(s.name+' joined the map');
   }).on('postgres_changes',{event:'UPDATE',schema:'public',table:'sessions',filter:'campaign_id=eq.'+cid},payload=>{
+    markRealtimeActivity();
     if(payload.new.id!==mySession){sessions[payload.new.id]=payload.new;updateTeamPanel();}
   }).on('postgres_changes',{event:'DELETE',schema:'public',table:'sessions',filter:'campaign_id=eq.'+cid},payload=>{
+    markRealtimeActivity();
     delete sessions[payload.old.id];
     if(markers[payload.old.id]){map.removeLayer(markers[payload.old.id]);delete markers[payload.old.id];}
     if(pathPolylines[payload.old.id]){map.removeLayer(pathPolylines[payload.old.id]);delete pathPolylines[payload.old.id];}
@@ -923,13 +966,12 @@ function startTracking(){
       if(isTracking)enablePocketLock();
     }
   },1000);
-  if(trackingMode==='eco'){startEcoTracking();}else{startWatchPosition();}
+  startWatchPosition();
 }
 
 function stopTracking(){
   isTracking=false;
   if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;}
-  if(ecoInterval){clearInterval(ecoInterval);ecoInterval=null;}
   releaseWakeLock();
   disablePocketLock();
   document.getElementById('relock-btn').style.display='none';
@@ -1355,7 +1397,6 @@ async function goBackToMain(){
   boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
   sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};overflowMenuVisible=false;
   const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
-  ecoInterval=null;
   document.getElementById('relock-btn').style.display='none';
   document.getElementById('admin-btn').style.display='none';
   await loadCampaigns();
@@ -1378,7 +1419,7 @@ async function logOut(){
   boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
   sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};overflowMenuVisible=false;
   const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
-  ecoInterval=null;wakeLock=null;
+  wakeLock=null;if(realtimeHeartbeatInterval){clearInterval(realtimeHeartbeatInterval);realtimeHeartbeatInterval=null;}
   document.getElementById('relock-btn').style.display='none';
   showScreen('auth-screen');
 }
@@ -1479,26 +1520,53 @@ async function deleteIncidentPin(id){
   showToast('Incident pin removed');
 }
 
-// ── ECO BTN VISUAL STATE ──────────────────────────────
-function updateEcoBtn(){
-  const btn=document.getElementById('eco-btn');
-  if(!btn)return;
-  if(trackingMode==='eco'){btn.classList.add('eco-active');btn.title='Eco mode active — tap for high accuracy';}
-  else{btn.classList.remove('eco-active');btn.title='High accuracy mode — tap for eco';}
-}
 
 // ── REALTIME RECONNECT ────────────────────────────────
+let realtimeHeartbeatInterval=null;
+let lastRealtimeActivity=Date.now();
+
+function markRealtimeActivity(){
+  lastRealtimeActivity=Date.now();
+}
+
 function setupReconnect(){
+  // 1. Reconnect on network coming back online
   window.addEventListener('online',()=>{
     showToast('Connection restored — reconnecting…');
-    setTimeout(()=>{
-      // Re-subscribe all channels
-      sb.removeAllChannels();
-      subscribeRealtime();
-      // Re-fetch latest data silently
-      loadExistingData();
-    },1500);
+    setTimeout(()=>{ resubscribeRealtime(); },1500);
   });
+
+  // 2. Reconnect when app comes back to foreground
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible' && myCampaign){
+      // Always reload data when coming back — may have missed events
+      setTimeout(()=>{
+        loadExistingData();
+        // Check if channels are still alive
+        resubscribeRealtime();
+      }, 800);
+    }
+  });
+
+  // 3. Heartbeat every 45s — if no realtime activity for 90s, force resubscribe
+  realtimeHeartbeatInterval=setInterval(()=>{
+    if(!myCampaign) return;
+    const silent=Date.now()-lastRealtimeActivity;
+    if(silent > 90000){
+      console.log('Realtime silent for 90s — resubscribing');
+      resubscribeRealtime();
+    }
+  }, 45000);
+}
+
+function resubscribeRealtime(){
+  if(!myCampaign) return;
+  try{
+    sb.removeAllChannels();
+    subscribeRealtime();
+    loadExistingData();
+    lastRealtimeActivity=Date.now();
+  } catch(e){ console.warn('resubscribe failed:',e); }
 }
 
 
@@ -1640,23 +1708,7 @@ function selectStreetSuggestion(name){
 }
 
 // ── BATTERY-FRIENDLY TRACKING ─────────────────────────
-let trackingMode='high'; // 'high' or 'eco'
-let ecoInterval=null;
 
-function setTrackingMode(mode){
-  trackingMode=mode;
-  if(!isTracking)return;
-  // Restart tracking with new mode
-  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;}
-  if(ecoInterval){clearInterval(ecoInterval);ecoInterval=null;}
-  if(mode==='high'){
-    startWatchPosition();
-  } else {
-    startEcoTracking();
-  }
-  updateEcoBtn();
-  showToast(mode==='high'?'🔋 High accuracy mode':'🌿 Eco mode (30s interval)');
-}
 
 function startWatchPosition(){
   watchId=navigator.geolocation.watchPosition(async pos=>{
@@ -1664,18 +1716,6 @@ function startWatchPosition(){
   },err=>showToast('Location error: '+err.message),{enableHighAccuracy:true,maximumAge:5000,timeout:10000});
 }
 
-function startEcoTracking(){
-  // Immediately get one position, then poll every 30s
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    await handleNewPosition(pos.coords.latitude,pos.coords.longitude);
-  },err=>showToast('Location error: '+err.message),{enableHighAccuracy:false,maximumAge:30000,timeout:15000});
-  ecoInterval=setInterval(()=>{
-    if(!isTracking)return;
-    navigator.geolocation.getCurrentPosition(async pos=>{
-      await handleNewPosition(pos.coords.latitude,pos.coords.longitude);
-    },()=>{},{enableHighAccuracy:false,maximumAge:30000,timeout:15000});
-  },30000);
-}
 
 async function handleNewPosition(lat,lng){
   lastPos={lat,lng};myPoints.push([lat,lng]);
