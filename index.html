@@ -657,20 +657,29 @@ async function checkAuth() {
 
 // ── CAMPAIGNS ─────────────────────────────────────────
 async function loadCampaigns() {
-  const { data } = await sb.from('campaigns').select('*').order('created_at', { ascending: false }).limit(10);
+  const { data } = await sb.from('campaigns').select('*').order('created_at', { ascending: false }).limit(20);
   const list = document.getElementById('campaign-list');
   const orDiv = document.getElementById('or-divider');
+  list.innerHTML = '';
   if (data && data.length > 0) {
     orDiv.style.display = 'block';
-    list.innerHTML = data.map(c => {
-      const safeName = c.name.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
-      const date = new Date(c.created_at).toLocaleDateString();
-      const target = c.bag_target||1600;
-      return '<div class="campaign-item" onclick="selectCampaign(\'' + c.id + '\',\'' + safeName + '\',' + target + ',event)">' +
-        '<span class="campaign-item-name">' + c.name + '</span>' +
-        '<span class="campaign-item-date">' + date + '</span></div>';
-    }).join('');
-  } else { orDiv.style.display='none'; list.innerHTML=''; }
+    data.forEach(c => {
+      const item = document.createElement('div');
+      item.className = 'campaign-item';
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'campaign-item-name';
+      nameSpan.textContent = c.name;
+      const dateSpan = document.createElement('span');
+      dateSpan.className = 'campaign-item-date';
+      dateSpan.textContent = new Date(c.created_at).toLocaleDateString();
+      item.appendChild(nameSpan);
+      item.appendChild(dateSpan);
+      item.addEventListener('click', e => selectCampaign(c.id, c.name, c.bag_target||1600, e));
+      list.appendChild(item);
+    });
+  } else {
+    orDiv.style.display = 'none';
+  }
 }
 
 function selectCampaign(id, name, bagTarget, e) {
