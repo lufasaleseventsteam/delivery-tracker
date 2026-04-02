@@ -206,8 +206,6 @@
   body.dark .campaign-item:hover, body.dark .campaign-item.selected { background: #1a2e1a; border-color: #4d8c3f; }
   body.dark .or-divider { color: #666; }
   body.dark #history-screen { background: #1e1e1e; }
-  body.dark #incident-modal-overlay .modal { background: #252525; }
-  body.dark #incident-note { background: #2a2a2a; border-color: #444; color: #f0f0f0; }
   body.dark #history-list > div { background: #252525 !important; color: #f0f0f0; }
   body.dark #street-autocomplete { background: #2a2a2a; }
   body.dark #street-autocomplete > div { color: #ccc; border-bottom-color: #333; }
@@ -226,10 +224,6 @@
 
   /* ECO BTN ACTIVE STATE */
 
-  /* INCIDENT MODAL IMAGE PREVIEW */
-  #incident-preview { width:100%;max-height:140px;object-fit:cover;border-radius:10px;margin-bottom:0.75rem;display:none; }
-  body.dark #incident-preview { border:1px solid #444; }
-  body.dark .incident-note { background:#2a2a2a;color:#ccc; }
   /* ── HOVER STATES (mouse users) ── */
   .icon-btn:hover { filter: brightness(0.93); }
   .green-btn:hover:not(:disabled) { background: #3d7a30; }
@@ -394,7 +388,6 @@
   <button onclick="logOut()" style="margin-top:0.5rem;padding:0.65rem 1.5rem;background:#f0f0f0;border:none;border-radius:12px;font-size:0.85rem;font-weight:600;color:#666;cursor:pointer;width:100%;max-width:300px;">⏏ Sign out</button>
 </div>
 
-
 <!-- HISTORY SCREEN -->
 <div id="history-screen" class="screen" style="align-items:stretch;padding:0;justify-content:flex-start;">
   <div style="background:#4d8c3f;color:#fff;padding:1rem 1rem 0.75rem;display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
@@ -494,26 +487,6 @@
     </div>
   </div>
 
-
-  <!-- INCIDENT MODAL -->
-  <div class="modal-overlay" id="incident-modal-overlay">
-    <div class="modal">
-      <div class="modal-title">⚠️ Report an incident</div>
-      <div class="modal-sub">Drop a warning pin at your current location with a note and optional photo.</div>
-      <textarea id="incident-note" rows="3" placeholder="Describe the issue (e.g. road blocked, dog, icy sidewalk…)" style="width:100%;padding:0.75rem 1rem;border:1.5px solid #ddd;border-radius:12px;font-size:0.95rem;outline:none;resize:none;font-family:inherit;margin-bottom:0.75rem;" class="incident-note"></textarea>
-      <label style="display:flex;align-items:center;gap:0.5rem;background:#f5f5f5;border-radius:12px;padding:0.7rem 1rem;cursor:pointer;margin-bottom:0.75rem;font-size:0.85rem;font-weight:600;color:#555;">
-        📷 Add a photo (optional)
-        <input type="file" id="incident-photo" accept="image/*" capture="environment" style="display:none;" onchange="previewIncidentPhoto(this)"/>
-      </label>
-      <img id="incident-preview" alt="Preview"/>
-      <div class="modal-btns">
-        <button class="modal-cancel" onclick="closeIncidentModal()">Cancel</button>
-        <button class="modal-confirm" style="background:#e6a817;color:#fff;" onclick="confirmIncident()">📍 Drop pin</button>
-      </div>
-    </div>
-  </div>
-
-
   <!-- ZONE OPTIONS MODAL -->
   <div class="modal-overlay" id="zone-modal-overlay">
     <div class="modal">
@@ -568,7 +541,6 @@
     <button class="main-btn start" id="main-btn" onclick="toggleTracking()">▶ Start</button>
     <button class="mark-btn" id="mark-btn" onclick="openModal()" disabled>✅ Done</button>
     <button class="summary-btn" onclick="showSummary()">📊 Summary</button>
-    <button id="incident-btn" onclick="openIncidentModal()" style="flex:0 0 auto;padding:0.8rem 0.7rem;border-radius:14px;font-size:0.8rem;font-weight:700;cursor:pointer;background:#fff3cd;color:#856404;border:1.5px solid #ffc107;white-space:nowrap;" title="Report an incident">⚠️</button>
   </div>
 </div>
 
@@ -813,11 +785,6 @@ async function loadExistingData() {
       if (rally&&rally.length>0){ drawRallyMarker(rally[0].lat,rally[0].lng); const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='flex'; }
     } catch(e){console.warn('rally_points load failed — table may not exist yet:',e.message);}
 
-    try {
-      const {data:incidents}=await sb.from('incident_pins').select('*').eq('campaign_id',cid).order('created_at',{ascending:true});
-      if (incidents) incidents.forEach(m=>placeIncidentPin(m));
-    } catch(e){console.warn('incident_pins load failed — table may not exist yet:',e.message);}
-
     updateTeamPanel();updateLegend();if(isManager)updateAdminPanel();
   } catch(e){console.error('loadExistingData error:',e);}
   finally{hideMapLoading();}
@@ -883,12 +850,6 @@ function subscribeRealtime() {
     if(rallyMarker){map.removeLayer(rallyMarker);rallyMarker=null;}
   }).subscribe();
 
-  sb.channel('incident-ch').on('postgres_changes',{event:'INSERT',schema:'public',table:'incident_pins',filter:'campaign_id=eq.'+cid},payload=>{
-    placeIncidentPin(payload.new);
-    showToast('⚠️ Incident reported by '+payload.new.added_by);
-  }).on('postgres_changes',{event:'DELETE',schema:'public',table:'incident_pins',filter:'campaign_id=eq.'+cid},payload=>{
-    if(incidentObjects[payload.old.id]){map.removeLayer(incidentObjects[payload.old.id]);delete incidentObjects[payload.old.id];}
-  }).subscribe();
 }
 
 // ── SEARCH ────────────────────────────────────────────
@@ -1079,7 +1040,7 @@ function rallyUseTap(){
   isRallyTapMode=true;
   const hint=document.getElementById('rally-tap-hint');
   hint.style.display='flex';
-  document.getElementById('rally-btn') && document.getElementById('rally-btn').classList.add('active');
+  document.getElementById('overflow-btn') && document.getElementById('overflow-btn').classList.add('active');
   // Update overflow menu to show cancel option
   const rallyBtn=document.querySelector('#overflow-menu .overflow-item');
   if(rallyBtn){ rallyBtn.textContent='✕ Cancel rally placement'; rallyBtn.onclick=()=>{closeOverflowMenu();cancelRallyTap();}; }
@@ -1089,7 +1050,7 @@ function cancelRallyTap(){
   isRallyTapMode=false;
   const hint=document.getElementById('rally-tap-hint');
   hint.style.display='none';
-  document.getElementById('rally-btn') && document.getElementById('rally-btn').classList.remove('active');
+  document.getElementById('overflow-btn') && document.getElementById('overflow-btn').classList.remove('active');
   // Restore overflow menu
   const rallyBtn=document.querySelector('#overflow-menu .overflow-item');
   if(rallyBtn){ rallyBtn.textContent='🚛 Rally point'; rallyBtn.onclick=()=>{closeOverflowMenu();placeRallyPoint();}; }
@@ -1404,7 +1365,10 @@ async function goBackToMain(){
   isTracking=false;watchId=null;lastPos=null;trackingStartTime=null;
   pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
   boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
-  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};overflowMenuVisible=false;
+  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;overflowMenuVisible=false;
+  releaseWakeLock();
+  wakeLock=null;
+  if(realtimeHeartbeatInterval){clearInterval(realtimeHeartbeatInterval);realtimeHeartbeatInterval=null;}
   const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
   document.getElementById('relock-btn').style.display='none';
   document.getElementById('admin-btn').style.display='none';
@@ -1426,8 +1390,9 @@ async function logOut(){
   isTracking=false;watchId=null;lastPos=null;trackingStartTime=null;
   pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
   boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
-  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;incidentObjects={};overflowMenuVisible=false;
+  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;overflowMenuVisible=false;
   const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
+  releaseWakeLock();
   wakeLock=null;if(realtimeHeartbeatInterval){clearInterval(realtimeHeartbeatInterval);realtimeHeartbeatInterval=null;}
   document.getElementById('relock-btn').style.display='none';
   showScreen('auth-screen');
@@ -1439,96 +1404,9 @@ document.getElementById('name-input').addEventListener('keydown',e=>{if(e.key===
 document.getElementById('campaign-input').addEventListener('keydown',e=>{if(e.key==='Enter')submitCampaign();});
 document.getElementById('street-input').addEventListener('keydown',e=>{if(e.key==='Enter')confirmStreetDone();});
 
-
 // ── LOADING OVERLAY ───────────────────────────────────
 function showMapLoading(){ const el=document.getElementById('map-loading');if(el)el.style.display='flex'; }
 function hideMapLoading(){ const el=document.getElementById('map-loading');if(el)el.style.display='none'; }
-
-// ── INCIDENT PINS ─────────────────────────────────────
-let incidentObjects={};
-let incidentPhotoData=null;
-
-function openIncidentModal(){
-  document.getElementById('incident-note').value='';
-  document.getElementById('incident-preview').style.display='none';
-  document.getElementById('incident-preview').src='';
-  document.getElementById('incident-photo').value='';
-  incidentPhotoData=null;
-  document.getElementById('incident-modal-overlay').classList.add('visible');
-  setTimeout(()=>document.getElementById('incident-note').focus(),100);
-}
-function closeIncidentModal(){
-  document.getElementById('incident-modal-overlay').classList.remove('visible');
-}
-function previewIncidentPhoto(input){
-  if(!input.files||!input.files[0])return;
-  const file=input.files[0];
-  // Resize to max 800px wide before storing to keep size manageable
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const img=new Image();
-    img.onload=()=>{
-      const maxW=800;
-      const scale=img.width>maxW?maxW/img.width:1;
-      const canvas=document.createElement('canvas');
-      canvas.width=img.width*scale;canvas.height=img.height*scale;
-      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-      incidentPhotoData=canvas.toDataURL('image/jpeg',0.75);
-      const prev=document.getElementById('incident-preview');
-      prev.src=incidentPhotoData;prev.style.display='block';
-    };
-    img.src=e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-async function confirmIncident(){
-  const note=document.getElementById('incident-note').value.trim();
-  if(!note){showToast('Please add a note describing the issue');return;}
-  const pos=lastPos||{lat:map.getCenter().lat,lng:map.getCenter().lng};
-  const btn=document.querySelector('#incident-modal-overlay .modal-confirm');
-  btn.disabled=true;btn.textContent='Saving…';
-  const {error}=await sb.from('incident_pins').insert({
-    note,
-    photo:incidentPhotoData||null,
-    lat:pos.lat,lng:pos.lng,
-    added_by:myName,
-    color:myColor,
-    campaign_id:myCampaign.id
-  });
-  btn.disabled=false;btn.textContent='📍 Drop pin';
-  if(error){showToast('Error: '+error.message);return;}
-  closeIncidentModal();
-}
-function placeIncidentPin(m){
-  const icon=L.divIcon({
-    className:'',
-    html:'<div style="font-size:26px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">⚠️</div>',
-    iconSize:[30,30],iconAnchor:[15,28]
-  });
-  // Store id on window so inline onclick can reach it safely
-  const safeId=m.id;
-  const photoHtml=m.photo?`<img src="${m.photo}" style="width:100%;border-radius:8px;margin-bottom:8px;max-height:160px;object-fit:cover;"/>`:'';
-  const popupEl=document.createElement('div');
-  popupEl.style.cssText='font-family:sans-serif;min-width:180px;max-width:240px';
-  popupEl.innerHTML=photoHtml+
-    `<div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;color:#856404;">⚠️ Incident</div>`+
-    `<div style="font-size:0.85rem;color:#333;margin-bottom:6px;">${m.note}</div>`+
-    `<div style="font-size:0.75rem;color:#999;margin-bottom:8px;">Reported by ${m.added_by}</div>`;
-  const removeBtn=document.createElement('button');
-  removeBtn.textContent='🗑 Remove';
-  removeBtn.style.cssText='background:#fce8e6;color:#d93025;border:none;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%';
-  removeBtn.onclick=()=>deleteIncidentPin(safeId);
-  popupEl.appendChild(removeBtn);
-  const marker=L.marker([m.lat,m.lng],{icon}).bindPopup(popupEl).addTo(map);
-  incidentObjects[m.id]=marker;
-}
-async function deleteIncidentPin(id){
-  map.closePopup();
-  await sb.from('incident_pins').delete().eq('id',id);
-  if(incidentObjects[id]){map.removeLayer(incidentObjects[id]);delete incidentObjects[id];}
-  showToast('Incident pin removed');
-}
-
 
 // ── REALTIME RECONNECT ────────────────────────────────
 let realtimeHeartbeatInterval=null;
@@ -1578,7 +1456,6 @@ function resubscribeRealtime(){
   } catch(e){ console.warn('resubscribe failed:',e); }
 }
 
-
 // ── TOPBAR HEIGHT (dynamic searchbar positioning) ────────────────
 function updateTopbarHeight(){
   const tb=document.querySelector('.topbar');
@@ -1621,7 +1498,6 @@ function closeOverflowMenu(){
 function toggleDarkMode(){
   const dark=document.body.classList.toggle('dark');
   localStorage.setItem('lufa-dark',dark?'1':'0');
-  const darkBtn=document.getElementById('dark-btn'); if(darkBtn) darkBtn.textContent=dark?'☀️':'🌙';
   const overflowDarkBtn=document.getElementById('overflow-dark-btn'); if(overflowDarkBtn) overflowDarkBtn.textContent=dark?'☀️ Light mode':'🌙 Dark mode';
 }
 (function(){
@@ -1718,13 +1594,11 @@ function selectStreetSuggestion(name){
 
 // ── BATTERY-FRIENDLY TRACKING ─────────────────────────
 
-
 function startWatchPosition(){
   watchId=navigator.geolocation.watchPosition(async pos=>{
     await handleNewPosition(pos.coords.latitude,pos.coords.longitude);
   },err=>showToast('Location error: '+err.message),{enableHighAccuracy:true,maximumAge:5000,timeout:10000});
 }
-
 
 async function handleNewPosition(lat,lng){
   lastPos={lat,lng};myPoints.push([lat,lng]);
@@ -1763,8 +1637,7 @@ window.addEventListener('beforeunload',e=>{
 });
 
 // Apply saved dark mode to button after DOM ready
-if(localStorage.getItem('lufa-dark')==='1'){const b=document.getElementById('dark-btn');if(b)b.textContent='☀️';const ob=document.getElementById('overflow-dark-btn');if(ob)ob.textContent='☀️ Light mode';}
-
+if(localStorage.getItem('lufa-dark')==='1'){const ob=document.getElementById('overflow-dark-btn');if(ob)ob.textContent='☀️ Light mode';}
 
 checkAuth();
 </script>
