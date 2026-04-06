@@ -835,7 +835,66 @@ async function handleNewPosition(lat, lng, accuracy){
   });
 }
 
-// ── PUSH NOTIFICATIONS (rally point) ─────────────────
+// ── WAKE LOCK ─────────────────────────────────────────
+let wakeLock=null;
+async function requestWakeLock(){
+  if(!('wakeLock' in navigator)) return;
+  try{
+    wakeLock=await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release',()=>{wakeLock=null;});
+  } catch(e){console.log('Wake lock unavailable:',e.message);}
+}
+async function releaseWakeLock(){
+  if(wakeLock){try{await wakeLock.release();}catch(e){}wakeLock=null;}
+}
+document.addEventListener('visibilitychange',async()=>{
+  if(isTracking && document.visibilityState==='visible' && !wakeLock) await requestWakeLock();
+});
+
+// ── TRACKING ──────────────────────────────────────────
+function toggleTracking(){isTracking?stopTracking():startTracking();}
+
+function startTracking(){
+  if(!navigator.geolocation){showToast('Geolocation not supported');return;}
+  isTracking=true; myPoints=[]; trackingStartTime=new Date();
+  sb.from('sessions').update({tracking_start:trackingStartTime.toISOString()}).eq('id',mySession);
+  document.getElementById('main-btn').className='main-btn stop';
+  document.getElementById('main-btn').textContent='⏹ Stop';
+  document.getElementById('topbar-status').textContent='Tracking…';
+  requestNotificationPermission();
+  requestWakeLock();
+  // Auto-lock after 5 seconds
+  let countdown=5;
+  const statusEl=document.getElementById('topbar-status');
+  const autoLockTimer=setInterval(()=>{
+    countdown--;
+    statusEl.textContent='Tracking… locking in '+countdown+'s';
+    if(countdown<=0){
+      clearInterval(autoLockTimer);
+      statusEl.textContent='Tracking…';
+      if(isTracking) enablePocketLock();
+    }
+  },1000);
+  startWatchPosition();
+}
+
+function stopTracking(){
+  isTracking=false;
+  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;}
+  if(backupTrackInterval){clearInterval(backupTrackInterval);backupTrackInterval=null;}
+  lastInsertedPos=null; lastInsertedTime=0;
+  releaseWakeLock();
+  disablePocketLock();
+  document.getElementById('relock-btn').style.display='none';
+  const stopTime=new Date();
+  sb.from('sessions').update({tracking_end:stopTime.toISOString()}).eq('id',mySession);
+  document.getElementById('main-btn').className='main-btn start';
+  document.getElementById('main-btn').textContent='▶ Start';
+  document.getElementById('topbar-status').textContent='Tracking stopped';
+  showToast('Route saved!');
+}
+
+
 async function requestNotificationPermission(){
   if(!('Notification' in window))return;
   if(Notification.permission==='default'){
@@ -864,6 +923,443 @@ window.addEventListener('beforeunload',e=>{
 
 // Apply saved dark mode to button after DOM ready
 if(localStorage.getItem('lufa-dark')==='1'){const ob=document.getElementById('overflow-dark-btn');if(ob)ob.textContent='☀️ Light mode';}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='none';});
+  const el=document.getElementById(id);
+  if(el){el.style.display='flex';el.classList.add('active');}
+}
+function showEl(id,msg){const el=document.getElementById(id);if(el){el.textContent=msg;el.style.display='block';}}
+function showToast(msg){const t=document.getElementById('toast');if(t){t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}}
+function showMapLoading(){const el=document.getElementById('map-loading');if(el)el.style.display='flex';}
+function hideMapLoading(){const el=document.getElementById('map-loading');if(el)el.style.display='none';}
+
+// ── DARK MODE ─────────────────────────────────────────
+function toggleDarkMode(){
+  const dark=document.body.classList.toggle('dark');
+  localStorage.setItem('lufa-dark', dark?'1':'0');
+  const ob=document.getElementById('overflow-dark-btn');
+  if(ob) ob.textContent=dark?'☀️ Light mode':'🌙 Dark mode';
+}
+
+// ── NAVIGATION ────────────────────────────────────────
+async function goBackToMain(){
+  if(isTracking){
+    if(!confirm('You are still tracking. Going back will stop tracking. Continue?'))return;
+    stopTracking();
+  }
+  if(map){map.remove();map=null;}
+  mySession=null;myColor=null;myName=null;myCampaign=null;
+  isTracking=false;watchId=null;lastPos=null;trackingStartTime=null;
+  lastInsertedPos=null;lastInsertedTime=0;
+  if(backupTrackInterval){clearInterval(backupTrackInterval);backupTrackInterval=null;}
+  pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
+  boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
+  sessions={};rallyMarker=null;isRallyTapMode=false;overflowMenuVisible=false;
+  releaseWakeLock();wakeLock=null;
+  if(realtimeHeartbeatInterval){clearInterval(realtimeHeartbeatInterval);realtimeHeartbeatInterval=null;}
+  sb.removeAllChannels();
+  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
+  document.getElementById('relock-btn').style.display='none';
+  document.getElementById('admin-btn').style.display='none';
+  await loadCampaigns();
+  document.getElementById('join-btn').disabled=false;
+  document.getElementById('join-btn').textContent='Go to map →';
+  showScreen('campaign-screen');
+}
+
+async function logOut(){
+  if(isTracking){
+    if(!confirm('You are still tracking. Logging out will stop tracking. Continue?'))return;
+    stopTracking();
+  }
+  await sb.auth.signOut();
+  if(map){map.remove();map=null;}
+  mySession=null;myColor=null;myName=null;myCampaign=null;myUser=null;isManager=false;
+  isTracking=false;watchId=null;lastPos=null;trackingStartTime=null;
+  lastInsertedPos=null;lastInsertedTime=0;
+  if(backupTrackInterval){clearInterval(backupTrackInterval);backupTrackInterval=null;}
+  pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
+  boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
+  sessions={};rallyMarker=null;isRallyTapMode=false;overflowMenuVisible=false;
+  releaseWakeLock();wakeLock=null;
+  if(realtimeHeartbeatInterval){clearInterval(realtimeHeartbeatInterval);realtimeHeartbeatInterval=null;}
+  sb.removeAllChannels();
+  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
+  document.getElementById('relock-btn').style.display='none';
+  showScreen('auth-screen');
+}
+
+// ── MAP UTILS ─────────────────────────────────────────
+function drawPath(sid,points,color){
+  if(pathPolylines[sid])map.removeLayer(pathPolylines[sid]);
+  if(points.length>1)pathPolylines[sid]=L.polyline(points,{color,weight:5,opacity:0.8}).addTo(map);
+}
+function updateMarker(sid,lat,lng,color,name){
+  if(markers[sid])map.removeLayer(markers[sid]);
+  const icon=L.divIcon({className:'',html:'<div style="background:'+color+';width:14px;height:14px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>',iconSize:[14,14],iconAnchor:[7,7]});
+  markers[sid]=L.marker([lat,lng],{icon}).bindTooltip(name,{permanent:false,direction:'top'}).addTo(map);
+}
+function onMapClick(e){
+  if(isDrawMode){
+    boundaryPoints.push([e.latlng.lat,e.latlng.lng]);
+    const dot=L.circleMarker([e.latlng.lat,e.latlng.lng],{radius:5,color:'#fbbc04',fillColor:'#fbbc04',fillOpacity:1,weight:2}).addTo(map);
+    boundaryMarkers.push(dot);
+    if(boundaryLine)map.removeLayer(boundaryLine);
+    if(boundaryPoints.length>1)
+      boundaryLine=L.polyline([...boundaryPoints,boundaryPoints[0]],{color:'#fbbc04',weight:2.5,dashArray:'6 4',opacity:0.9}).addTo(map);
+  }
+  if(isRallyTapMode){
+    isRallyTapMode=false;
+    const hint=document.getElementById('rally-tap-hint');if(hint)hint.style.display='none';
+    const rb=document.getElementById('overflow-btn');if(rb)rb.classList.remove('active');
+    saveRallyPoint(e.latlng.lat,e.latlng.lng);
+    const zoneBtn=document.getElementById('overflow-zone-btn');
+    if(zoneBtn){zoneBtn.textContent='🚛 Rally point';zoneBtn.onclick=()=>{closeOverflowMenu();placeRallyPoint();};}
+  }
+}
+
+// ── TEAM PANEL ────────────────────────────────────────
+let teamPanelVisible=false;
+function toggleTeamPanel(){
+  teamPanelVisible=!teamPanelVisible;
+  document.getElementById('team-panel').classList.toggle('visible',teamPanelVisible);
+  closeOverflowMenu();
+}
+function updateTeamPanel(){
+  const el=document.getElementById('team-list');
+  if(!el)return;
+  const others=Object.values(sessions);
+  if(!others.length){el.innerHTML='<div style="font-size:0.8rem;color:#999;">No other members yet</div>';return;}
+  el.innerHTML=others.map(s=>{
+    const ago=s.last_seen?Math.round((Date.now()-new Date(s.last_seen).getTime())/60000)+'m ago':'–';
+    return '<div class="team-member"><div class="user-dot" style="background:'+s.color+'"></div><div><div style="font-size:0.85rem;font-weight:600;color:#333">'+s.name+'</div><div style="font-size:0.75rem;color:#999">'+ago+'</div></div></div>';
+  }).join('');
+}
+function updateLegend(){
+  const el=document.getElementById('legend-items');if(!el)return;
+  const all=[{id:mySession,color:myColor,name:myName},...Object.values(sessions)];
+  el.innerHTML=all.map(s=>'<div class="legend-item"><div class="legend-line" style="background:'+s.color+'"></div><div class="legend-name">'+s.name+'</div></div>').join('');
+  document.getElementById('legend').style.display=all.length?'block':'none';
+}
+
+// ── ADMIN PANEL ───────────────────────────────────────
+let adminPanelVisible=false;
+function toggleAdminPanel(){
+  adminPanelVisible=!adminPanelVisible;
+  document.getElementById('admin-panel').classList.toggle('visible',adminPanelVisible);
+  closeOverflowMenu();
+}
+function updateAdminPanel(){
+  const el=document.getElementById('admin-list');if(!el)return;
+  const others=Object.values(sessions);
+  if(!others.length){el.innerHTML='<div style="font-size:0.8rem;color:#999;margin-bottom:0.5rem">No other members yet</div>';return;}
+  el.innerHTML=others.map(s=>'<div class="admin-member"><div class="admin-member-info"><div class="admin-dot" style="background:'+s.color+'"></div><div class="admin-name">'+s.name+'</div></div><button class="admin-del" onclick="deleteSession(\''+s.id+'\')">✕</button></div>').join('');
+}
+async function deleteSession(id){
+  await sb.from('sessions').delete().eq('id',id);
+  await sb.from('locations').delete().eq('session_id',id);
+  if(markers[id]){map.removeLayer(markers[id]);delete markers[id];}
+  if(pathPolylines[id]){map.removeLayer(pathPolylines[id]);delete pathPolylines[id];}
+  delete sessions[id];
+  updateTeamPanel();updateLegend();updateAdminPanel();
+}
+async function clearAllSessions(){
+  if(!confirm('Clear ALL sessions and paths for this campaign?'))return;
+  await sb.from('locations').delete().eq('campaign_id',myCampaign.id);
+  await sb.from('sessions').delete().eq('campaign_id',myCampaign.id).neq('id',mySession);
+  Object.keys(markers).forEach(id=>{if(id!==mySession){map.removeLayer(markers[id]);delete markers[id];}});
+  Object.keys(pathPolylines).forEach(id=>{if(id!==mySession){map.removeLayer(pathPolylines[id]);delete pathPolylines[id];}});
+  sessions={};updateTeamPanel();updateLegend();updateAdminPanel();
+  showToast('All sessions cleared');
+}
+
+// ── SUMMARY ───────────────────────────────────────────
+async function showSummary(){
+  showScreen('summary-screen');
+  const cid=myCampaign.id;
+  const {data:sess}=await sb.from('sessions').select('*').eq('campaign_id',cid);
+  const allSess=sess||[];
+  // Time per person
+  const timeList=document.getElementById('summary-time-list');
+  if(timeList){
+    timeList.innerHTML=allSess.map(s=>{
+      let dur='–';
+      if(s.tracking_start&&s.tracking_end){
+        const mins=Math.round((new Date(s.tracking_end)-new Date(s.tracking_start))/60000);
+        dur=mins>=60?Math.floor(mins/60)+'h '+(mins%60)+'m':mins+'m';
+      }
+      return '<div class="stat-row"><div class="stat-name"><div class="stat-dot" style="background:'+s.color+'"></div>'+s.name+'</div><div class="stat-val">⏱ '+dur+'</div></div>';
+    }).join('');
+  }
+}
+
+// ── HISTORY ───────────────────────────────────────────
+async function showHistory(){
+  showScreen('history-screen');
+  const el=document.getElementById('history-list');
+  if(!el)return;
+  el.innerHTML='<div style="color:#999;font-size:0.9rem;text-align:center;margin-top:2rem;">Loading…</div>';
+  const {data:campaigns}=await sb.from('campaigns').select('*').order('created_at',{ascending:false}).limit(30);
+  if(!campaigns||!campaigns.length){el.innerHTML='<div style="color:#999;font-size:0.9rem;text-align:center;margin-top:2rem;">No campaigns yet.</div>';return;}
+  const cids=campaigns.map(c=>c.id);
+  const {data:sessions_data}=await sb.from('sessions').select('*').in('campaign_id',cids);
+  const membersByCampaign={};
+  (sessions_data||[]).forEach(s=>{
+    if(!membersByCampaign[s.campaign_id])membersByCampaign[s.campaign_id]=[];
+    membersByCampaign[s.campaign_id].push(s);
+  });
+  el.innerHTML=campaigns.map(c=>{
+    const members=membersByCampaign[c.id]||[];
+    const date=new Date(c.created_at).toLocaleDateString('fr-CA',{month:'short',day:'numeric',year:'numeric'});
+    const dotsHtml=members.slice(0,6).map(m=>'<div style="width:10px;height:10px;border-radius:50%;background:'+m.color+';flex-shrink:0;" title="'+m.name+'"></div>').join('');
+    return '<div style="background:#fff;border-radius:14px;padding:1rem;margin-bottom:0.75rem;box-shadow:0 1px 4px rgba(0,0,0,0.08);">'+
+      '<div style="font-weight:700;font-size:0.95rem;color:#1a1a1a;margin-bottom:0.25rem;">'+c.name+'</div>'+
+      '<div style="font-size:0.8rem;color:#999;margin-bottom:0.5rem;">'+date+' · '+members.length+' member'+(members.length!==1?'s':'')+'</div>'+
+      '<div style="display:flex;gap:4px;flex-wrap:wrap;">'+dotsHtml+'</div></div>';
+  }).join('');
+}
+
+// ── ZONE / BOUNDARY ───────────────────────────────────
+let boundaryPolygons=[];
+function drawBoundaryFromPoints(points){
+  const poly=L.polygon(points,{color:'#4d8c3f',weight:2.5,dashArray:'8 5',fillColor:'#4d8c3f',fillOpacity:0.06}).addTo(map);
+  boundaryPolygons.push(poly);
+  boundaryPolygon=poly;
+}
+function clearAllBoundaryPolygons(){
+  boundaryPolygons.forEach(p=>map.removeLayer(p));
+  boundaryPolygons=[];boundaryPolygon=null;
+}
+function toggleDrawMode(){
+  if(isTracking){showToast('Stop tracking first');return;}
+  if(isDrawMode){cancelDraw();return;}
+  if(boundaryPolygon){openZoneModal();}else{startDrawMode();}
+}
+function openZoneModal(){
+  const btns=document.getElementById('zone-modal-btns');btns.innerHTML='';
+  const addBtn=document.createElement('button');addBtn.className='modal-confirm';
+  addBtn.style.cssText='background:#4285f4;color:#fff;';addBtn.textContent='➕ Add another zone';
+  addBtn.onclick=()=>{closeZoneModal();startDrawMode(false);};btns.appendChild(addBtn);
+  const replaceBtn=document.createElement('button');replaceBtn.className='modal-confirm';
+  replaceBtn.textContent='✏️ Replace current zone';
+  replaceBtn.onclick=()=>{closeZoneModal();startDrawMode(true);};btns.appendChild(replaceBtn);
+  const eraseBtn=document.createElement('button');eraseBtn.className='modal-cancel';
+  eraseBtn.style.cssText='background:#fce8e6;color:#d93025;';eraseBtn.textContent='🗑 Erase zone';
+  eraseBtn.onclick=()=>{closeZoneModal();clearBoundary();};btns.appendChild(eraseBtn);
+  document.getElementById('zone-modal-overlay').classList.add('visible');
+}
+function closeZoneModal(){document.getElementById('zone-modal-overlay').classList.remove('visible');}
+function startDrawMode(replaceExisting=false){
+  isDrawMode=true;
+  document.getElementById('draw-hint').style.display='flex';
+  document.getElementById('main-btn').className='main-btn done-draw';
+  document.getElementById('main-btn').textContent='✓ Finish zone';
+  document.getElementById('main-btn').onclick=finishBoundary;
+  boundaryPoints=[];boundaryMarkers.forEach(m=>map.removeLayer(m));boundaryMarkers=[];
+  if(boundaryLine){map.removeLayer(boundaryLine);boundaryLine=null;}
+  if(replaceExisting&&boundaryPolygon){map.removeLayer(boundaryPolygon);boundaryPolygon=null;}
+  const zoneBtn=document.getElementById('overflow-zone-btn');
+  if(zoneBtn){zoneBtn.textContent='✕ Cancel zone drawing';zoneBtn.onclick=()=>{closeOverflowMenu();cancelDraw();};}
+}
+function cancelDraw(){
+  isDrawMode=false;
+  document.getElementById('draw-hint').style.display='none';
+  boundaryMarkers.forEach(m=>map.removeLayer(m));boundaryMarkers=[];
+  if(boundaryLine){map.removeLayer(boundaryLine);boundaryLine=null;}
+  boundaryPoints=[];
+  document.getElementById('main-btn').className='main-btn start';
+  document.getElementById('main-btn').textContent='▶ Start';
+  document.getElementById('main-btn').onclick=toggleTracking;
+  const zoneBtn=document.getElementById('overflow-zone-btn');
+  if(zoneBtn){zoneBtn.textContent='✏️ Zone';zoneBtn.onclick=()=>{closeOverflowMenu();toggleDrawMode();};}
+}
+function undoLastPoint(){
+  if(!boundaryPoints.length)return;
+  boundaryPoints.pop();
+  const last=boundaryMarkers.pop();if(last)map.removeLayer(last);
+  if(boundaryLine)map.removeLayer(boundaryLine);boundaryLine=null;
+  if(boundaryPoints.length>1)
+    boundaryLine=L.polyline([...boundaryPoints,boundaryPoints[0]],{color:'#fbbc04',weight:2.5,dashArray:'6 4',opacity:0.9}).addTo(map);
+}
+async function finishBoundary(){
+  if(boundaryPoints.length<3){showToast('Add at least 3 points');return;}
+  boundaryMarkers.forEach(m=>map.removeLayer(m));boundaryMarkers=[];
+  if(boundaryLine){map.removeLayer(boundaryLine);boundaryLine=null;}
+  if(!boundaryPolygon) await sb.from('boundary').delete().eq('campaign_id',myCampaign.id);
+  await sb.from('boundary').insert({points:boundaryPoints,campaign_id:myCampaign.id});
+  drawBoundaryFromPoints(boundaryPoints);cancelDraw();showToast('Zone saved!');
+}
+async function clearBoundary(){
+  if(!confirm('Erase all zone boundaries?'))return;
+  await sb.from('boundary').delete().eq('campaign_id',myCampaign.id);
+  clearAllBoundaryPolygons();
+  if(adminPanelVisible){adminPanelVisible=false;document.getElementById('admin-panel').classList.remove('visible');}
+  showToast('Zone erased');
+}
+
+// ── RALLY POINT ───────────────────────────────────────
+function placeRallyPoint(){
+  if(rallyMarker){
+    document.getElementById('rally-modal-sub').textContent='Rally point is already set. Move it or remove it.';
+    document.getElementById('rally-choice-btns').innerHTML=
+      '<button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">📍 Move to my GPS location</button>'+
+      '<button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">👆 Tap on map to move it</button>'+
+      '<button class="modal-cancel" style="background:#fce8e6;color:#d93025;" onclick="removeRallyPoint()">🗑 Remove rally point</button>';
+  } else {
+    document.getElementById('rally-modal-sub').textContent='Choose how to place the pin.';
+    document.getElementById('rally-choice-btns').innerHTML=
+      '<button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">📍 Use my current GPS location</button>'+
+      '<button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">👆 Tap on the map to place it</button>';
+  }
+  document.getElementById('rally-modal-overlay').classList.add('visible');
+}
+function closeRallyModal(){document.getElementById('rally-modal-overlay').classList.remove('visible');}
+function rallyUseGPS(){
+  closeRallyModal();
+  if(!lastPos){showToast('No GPS position yet');return;}
+  saveRallyPoint(lastPos.lat,lastPos.lng);
+}
+function rallyUseTap(){
+  closeRallyModal();
+  isRallyTapMode=true;
+  const hint=document.getElementById('rally-tap-hint');hint.style.display='flex';
+  const rb=document.getElementById('overflow-btn');if(rb)rb.classList.add('active');
+  const rallyBtn=document.querySelector('#overflow-menu .overflow-item');
+  if(rallyBtn){rallyBtn.textContent='✕ Cancel rally placement';rallyBtn.onclick=()=>{closeOverflowMenu();cancelRallyTap();};}
+}
+function cancelRallyTap(){
+  isRallyTapMode=false;
+  const hint=document.getElementById('rally-tap-hint');hint.style.display='none';
+  const rb=document.getElementById('overflow-btn');if(rb)rb.classList.remove('active');
+  const rallyBtn=document.querySelector('#overflow-menu .overflow-item');
+  if(rallyBtn){rallyBtn.textContent='🚛 Rally point';rallyBtn.onclick=()=>{closeOverflowMenu();placeRallyPoint();};}
+}
+async function saveRallyPoint(lat,lng){
+  await sb.from('rally_points').delete().eq('campaign_id',myCampaign.id);
+  const {data}=await sb.from('rally_points').insert({lat,lng,campaign_id:myCampaign.id,set_by:myName}).select().single();
+  if(data){drawRallyMarker(lat,lng);sendRallyNotification(myName);}
+}
+function drawRallyMarker(lat,lng){
+  if(rallyMarker)map.removeLayer(rallyMarker);
+  const icon=L.divIcon({className:'',html:'<div style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">🚛</div>',iconSize:[32,32],iconAnchor:[16,16]});
+  const popupEl=document.createElement('div');
+  popupEl.style.cssText='font-family:sans-serif;min-width:160px;';
+  popupEl.innerHTML='<div style="font-weight:700;font-size:0.95rem;margin-bottom:4px">🚛 Rally & Reload Point</div><div style="font-size:0.8rem;color:#666;margin-bottom:8px">Meet here to reload.</div>';
+  const moveBtn=document.createElement('button');
+  moveBtn.style.cssText='background:#e8f0fe;color:#1a56c4;border:none;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%;margin-bottom:6px';
+  moveBtn.textContent='✏️ Move pin';moveBtn.onclick=()=>{map.closePopup();placeRallyPoint();};
+  popupEl.appendChild(moveBtn);
+  if(isManager){
+    const removeBtn=document.createElement('button');
+    removeBtn.style.cssText='background:#fce8e6;color:#d93025;border:none;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%';
+    removeBtn.textContent='🗑 Remove';removeBtn.onclick=removeRallyPoint;
+    popupEl.appendChild(removeBtn);
+  }
+  rallyMarker=L.marker([lat,lng],{icon}).bindPopup(popupEl).addTo(map);
+  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='flex';
+}
+async function removeRallyPoint(){
+  map.closePopup();closeRallyModal();
+  await sb.from('rally_points').delete().eq('campaign_id',myCampaign.id);
+  if(rallyMarker){map.removeLayer(rallyMarker);rallyMarker=null;}
+  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
+  showToast('Rally point removed');
+}
+function centreOnRally(){
+  if(rallyMarker){const ll=rallyMarker.getLatLng();map.setView([ll.lat,ll.lng],16);rallyMarker.openPopup();}
+  else showToast('No rally point set yet');
+}
+
+// ── POCKET LOCK ───────────────────────────────────────
+function enablePocketLock(){
+  document.getElementById('pocket-lock').classList.add('active');
+  document.getElementById('pocket-status-text').textContent='Tracking active · '+myName;
+  document.getElementById('relock-btn').style.display='none';
+}
+function disablePocketLock(){
+  document.getElementById('pocket-lock').classList.remove('active');
+  if(isTracking) document.getElementById('relock-btn').style.display='';
+}
+
+// ── OVERFLOW MENU ─────────────────────────────────────
+let overflowMenuVisible=false;
+function toggleOverflowMenu(){
+  overflowMenuVisible=!overflowMenuVisible;
+  document.getElementById('overflow-menu').classList.toggle('visible',overflowMenuVisible);
+  if(overflowMenuVisible){
+    if(teamPanelVisible){teamPanelVisible=false;document.getElementById('team-panel').classList.remove('visible');}
+    if(adminPanelVisible){adminPanelVisible=false;document.getElementById('admin-panel').classList.remove('visible');}
+  }
+}
+function closeOverflowMenu(){
+  overflowMenuVisible=false;
+  document.getElementById('overflow-menu').classList.remove('visible');
+}
+
+// ── RECONNECT ─────────────────────────────────────────
+let realtimeHeartbeatInterval=null;
+let lastRealtimeActivity=Date.now();
+function markRealtimeActivity(){lastRealtimeActivity=Date.now();}
+function setupReconnect(){
+  window.addEventListener('online',()=>{
+    showToast('Connection restored — reconnecting…');
+    setTimeout(()=>resubscribeRealtime(),1500);
+  });
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'&&myCampaign){
+      setTimeout(()=>{loadExistingData();resubscribeRealtime();},800);
+    }
+  });
+  realtimeHeartbeatInterval=setInterval(()=>{
+    if(!myCampaign)return;
+    if(Date.now()-lastRealtimeActivity>90000){
+      resubscribeRealtime();
+    }
+  },45000);
+}
+function resubscribeRealtime(){
+  if(!myCampaign)return;
+  try{sb.removeAllChannels();subscribeRealtime();loadExistingData();lastRealtimeActivity=Date.now();}
+  catch(e){console.warn('resubscribe failed:',e);}
+}
+
+// ── SEARCH ────────────────────────────────────────────
+function onSearchInput(){
+  const q=document.getElementById('search-input').value.trim();
+  clearTimeout(searchTimeout);
+  if(q.length<3){closeSearchResults();return;}
+  searchTimeout=setTimeout(()=>fetchSearchResults(q),350);
+}
+function onSearchKey(e){
+  if(e.key==='Enter'){const q=document.getElementById('search-input').value.trim();if(q.length>=3)fetchSearchResults(q);}
+  if(e.key==='Escape')closeSearchResults();
+}
+async function fetchSearchResults(q){
+  try{
+    const center=lastPos||{lat:45.5017,lng:-73.5673};
+    const url='https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=5&countrycodes=ca&bounded=1&viewbox='+(center.lng-0.1)+','+(center.lat+0.1)+','+(center.lng+0.1)+','+(center.lat-0.1);
+    const res=await fetch(url,{headers:{'Accept-Language':'fr,en'}});
+    const data=await res.json();
+    const el=document.getElementById('search-results');
+    if(!data.length){el.style.display='none';return;}
+    el.innerHTML='';
+    data.forEach(r=>{
+      const item=document.createElement('div');item.className='search-result-item';
+      item.textContent=r.display_name.substring(0,60)+(r.display_name.length>60?'…':'');
+      item.onclick=()=>{map.setView([parseFloat(r.lat),parseFloat(r.lon)],17);closeSearchResults();document.getElementById('search-input').value='';};
+      el.appendChild(item);
+    });
+    el.style.display='block';
+  }catch(e){closeSearchResults();}
+}
+function closeSearchResults(){const el=document.getElementById('search-results');if(el)el.style.display='none';}
+function jumpToMyLocation(){
+  if(lastPos){map.setView([lastPos.lat,lastPos.lng],17);}
+  else if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(p=>map.setView([p.coords.latitude,p.coords.longitude],17),()=>{},{enableHighAccuracy:true,timeout:8000});
+  }
+}
 
 checkAuth();
 </script>
