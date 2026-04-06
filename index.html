@@ -18,10 +18,10 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-  .screen { display: none; flex-direction: column; height: 100vh; height: 100dvh; align-items: center; justify-content: center; padding: 2rem; background: #fff; }
-  .screen.active { display: flex; }
+  .screen { display: none; flex-direction: column; height: 100vh; height: 100dvh; align-items: center; justify-content: center; padding: 2rem; background: #fff; overflow: hidden; }
+  .screen.active { display: flex; overflow: auto; }
+  #map-screen, #summary-screen { overflow: hidden; padding: 0; }
   #campaign-screen { justify-content: flex-start; overflow-y: auto; padding-top: 2rem; padding-bottom: 2rem; }
-  #map-screen, #summary-screen { padding: 0; }
   .logo { object-fit: contain; margin-bottom: 1.25rem; }
   .screen-title { font-size: 1.3rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem; text-align: center; }
   .screen-sub { font-size: 0.9rem; color: #666; margin-bottom: 2rem; text-align: center; }
