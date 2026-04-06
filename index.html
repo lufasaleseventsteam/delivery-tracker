@@ -69,14 +69,8 @@
   .icon-btn.danger { background: #fce8e6; color: #d93025; }
 
   /* SEARCH */
-  .searchbar { position: absolute; top: var(--topbar-h, 58px); left: 10px; right: 10px; z-index: 600; display: flex; gap: 0.4rem; }
-  .search-input-wrap { flex: 1; position: relative; }
-  .search-input { width: 100%; padding: 0.6rem 0.75rem; border: none; border-radius: 10px; font-size: 0.9rem; outline: none; box-shadow: 0 2px 8px rgba(0,0,0,0.18); background: #fff; }
-  .search-results { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-top: 4px; overflow: hidden; display: none; z-index: 700; }
-  .search-result-item { padding: 0.65rem 0.85rem; font-size: 0.85rem; color: #333; cursor: pointer; border-bottom: 1px solid #f0f0f0; }
   .search-result-item:last-child { border-bottom: none; }
   .search-result-item:hover { background: #f5f5f5; }
-  .locate-btn { background: #fff; border: none; border-radius: 10px; width: 40px; flex-shrink: 0; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.18); display: flex; align-items: center; justify-content: center; }
 
   /* BOTTOM */
   .bottombar { background: #fff; padding: 0.6rem 0.75rem; box-shadow: 0 -1px 4px rgba(0,0,0,0.1); z-index: 1000; flex-shrink: 0; width: 100%; display: flex; gap: 0.4rem; }
@@ -84,8 +78,6 @@
   .main-btn.start { background: #4d8c3f; color: #fff; }
   .main-btn.stop { background: #ea4335; color: #fff; }
   .main-btn.done-draw { background: #4285f4; color: #fff; }
-  .mark-btn { flex: 0 0 auto; padding: 0.8rem 0.7rem; border-radius: 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer; background: #fff3cd; color: #856404; border: 1.5px solid #ffc107; white-space: nowrap; }
-  .mark-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .summary-btn { flex: 0 0 auto; padding: 0.8rem 0.7rem; border-radius: 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer; background: #e8f0fe; color: #1a56c4; border: none; white-space: nowrap; }
 
   /* MODAL */
@@ -101,10 +93,6 @@
   .modal-btns button { padding: 0.65rem 0.5rem; border: none; border-radius: 12px; font-size: 0.88rem; font-weight: 600; cursor: pointer; width: 100%; }
   .modal-cancel { background: #f0f0f0; color: #333; }
   .modal-confirm { background: #4d8c3f; color: #fff; }
-  .bag-counter { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
-  .bag-counter-btn { width: 40px; height: 40px; border: 1.5px solid #ddd; border-radius: 10px; background: #f5f5f5; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
-  .bag-counter-val { font-size: 1.5rem; font-weight: 700; color: #1a1a1a; min-width: 40px; text-align: center; }
-  .bag-counter-label { font-size: 0.85rem; color: #666; }
 
   /* ADMIN */
   .admin-panel { position: absolute; top: 110px; right: 10px; background: #fff; border-radius: 14px; padding: 0.75rem; z-index: 500; box-shadow: 0 2px 12px rgba(0,0,0,0.18); min-width: 200px; display: none; }
@@ -126,7 +114,6 @@
   .summary-back { background: rgba(255,255,255,0.2); border: none; color: #fff; border-radius: 8px; padding: 0.4rem 0.75rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
   .summary-title { font-size: 1.1rem; font-weight: 700; }
   .summary-campaign { font-size: 0.8rem; opacity: 0.8; }
-  .progress-bar-wrap { background: rgba(255,255,255,0.25); border-radius: 20px; height: 12px; margin-top: 0.75rem; overflow: hidden; }
   .progress-bar-fill { background: #fff; height: 100%; border-radius: 20px; transition: width 0.5s; }
   .progress-label { font-size: 0.8rem; opacity: 0.9; margin-top: 0.3rem; text-align: right; }
   .summary-body { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; flex: 1; }
@@ -138,9 +125,6 @@
   .stat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .stat-val { font-size: 0.9rem; font-weight: 700; color: #1a1a1a; }
   .stat-sub { font-size: 0.75rem; color: #999; }
-  .street-list { display: flex; flex-direction: column; gap: 0.35rem; }
-  .street-tag { display: inline-flex; align-items: center; gap: 0.4rem; background: #f0f7ee; color: #2d6a22; border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.8rem; font-weight: 500; }
-  .street-bags { font-size: 0.75rem; color: #666; margin-left: 2px; }
 
   /* OVERLAYS */
   .legend { position: absolute; bottom: 90px; left: 10px; background: rgba(255,255,255,0.95); border-radius: 10px; padding: 0.6rem 0.8rem; z-index: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-width: 180px; }
@@ -173,27 +157,21 @@
   /* DARK MODE */
   body.dark { background: #1a1a1a; }
   body.dark .screen { background: #1e1e1e; }
-  body.dark .screen-title, body.dark .topbar-name, body.dark .bag-counter-val, body.dark .stat-val, body.dark .modal-title { color: #f0f0f0; }
+  body.dark .screen-title, body.dark .topbar-name, body.dark .stat-val, body.dark .modal-title { color: #f0f0f0; }
   body.dark .screen-sub, body.dark .topbar-status, body.dark .signed-in-as, body.dark .auth-note, body.dark .form-label, body.dark .modal-sub, body.dark .stat-sub, body.dark .member-time { color: #999; }
   body.dark .topbar, body.dark .bottombar { background: #252525; box-shadow: 0 1px 4px rgba(0,0,0,0.5); }
   body.dark .icon-btn { background: #333; color: #ccc; }
   body.dark .icon-btn.active { background: #1a3a6b; color: #7aadff; }
   body.dark .icon-btn.danger { background: #3d1a1a; color: #ff7070; }
-  body.dark .search-input { background: #2a2a2a; color: #f0f0f0; }
   body.dark .search-results { background: #2a2a2a; }
-  body.dark .search-result-item { color: #ccc; border-bottom-color: #333; }
   body.dark .search-result-item:hover { background: #333; }
-  body.dark .locate-btn { background: #2a2a2a; }
   body.dark .modal { background: #252525; }
   body.dark .modal input { background: #2a2a2a; border-color: #444; color: #f0f0f0; }
   body.dark .modal-cancel { background: #333; color: #ccc; }
-  body.dark .mark-btn { background: #3d3000; color: #ffd54f; border-color: #7a5f00; }
   body.dark .summary-card { background: #252525; }
   body.dark .summary-card-title { color: #888; }
   body.dark .stat-name { color: #ccc; }
   body.dark .stat-row { border-bottom-color: #333; }
-  body.dark .street-tag { background: #1a2e1a; color: #7ec87e; }
-  body.dark .street-bags { color: #888; }
   body.dark #summary-screen { background: #1a1a1a; }
   body.dark .legend, body.dark .team-panel, body.dark .admin-panel { background: #252525; }
   body.dark .legend-name, body.dark .member-name, body.dark .admin-name { color: #ccc; }
@@ -207,11 +185,6 @@
   body.dark .or-divider { color: #666; }
   body.dark #history-screen { background: #1e1e1e; }
   body.dark #history-list > div { background: #252525 !important; color: #f0f0f0; }
-  body.dark #street-autocomplete { background: #2a2a2a; }
-  body.dark #street-autocomplete > div { color: #ccc; border-bottom-color: #333; }
-  body.dark #street-autocomplete > div:hover { background: #333; }
-  body.dark .bag-counter-btn { background: #333; border-color: #555; color: #f0f0f0; }
-  body.dark .bag-counter-label { color: #999; }
   body.dark .topbar-campaign { color: #7ec87e; }
 
   /* LOADING OVERLAY */
@@ -299,7 +272,6 @@
     .icon-btn { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
 
     /* Searchbar sits a bit lower to clear topbar */
-    .searchbar { top: var(--topbar-h, 66px); left: 16px; right: 16px; }
 
     /* Bottom bar — cap width and centre on wide screens */
     .bottombar {
@@ -343,7 +315,6 @@
   @media (min-width: 1200px) {
     .topbar { padding: 0.6rem 2.5rem; }
     .bottombar { padding: 0.75rem 2.5rem; }
-    .searchbar { left: 2.5rem; right: 2.5rem; }
   }
 </style>
 </head>
@@ -379,8 +350,6 @@
     <input type="text" id="campaign-input" placeholder="e.g. Rosemont Week 1" maxlength="40" autocomplete="off"/>
     <div class="form-label">Your name <span style="font-weight:400;color:#aaa">(pre-filled from Google)</span></div>
     <input type="text" id="name-input" placeholder="Your name" maxlength="20" autocomplete="off"/>
-    <div class="form-label">Bag target <span style="font-weight:400;color:#aaa">(optional, default 1600)</span></div>
-    <input type="number" id="bag-target-input" placeholder="1600" min="1" max="99999" autocomplete="off"/>
     <button class="green-btn" id="join-btn" onclick="submitCampaign()">Go to map →</button>
   </div>
   <div class="error-msg" id="name-error"></div>
@@ -429,12 +398,15 @@
     </div>
   </div>
 
+    </div>
+  </div>
+
   <div class="searchbar">
     <div class="search-input-wrap">
-      <input class="search-input" id="search-input" type="text" placeholder="Search address or neighbourhood..." autocomplete="off" oninput="onSearchInput()" onkeydown="onSearchKey(event)"/>
+      <input class="search-input" id="search-input" type="text" placeholder="Search address…" autocomplete="off" oninput="onSearchInput()" onkeydown="onSearchKey(event)"/>
       <div class="search-results" id="search-results"></div>
     </div>
-    <button class="locate-btn" onclick="jumpToMyLocation()" title="Centre on my location">📍</button>
+    <button class="locate-btn" onclick="jumpToMyLocation()" title="My location">📍</button>
     <button class="locate-btn" id="center-rally-btn" onclick="centreOnRally()" title="Centre on rally point" style="display:none;">🚛</button>
   </div>
 
@@ -460,31 +432,6 @@
     <div id="admin-list"></div>
     <button class="admin-clear" onclick="clearAllSessions()">🗑 Clear everyone & start fresh</button>
     <button class="admin-clear" style="margin-top:0.4rem;background:#fff3cd;color:#856404" onclick="clearBoundary()">✏️ Erase & redraw zone</button>
-    <button class="admin-clear" style="margin-top:0.4rem;background:#e8f0fe;color:#1a56c4" onclick="editBagTarget()">🎯 Edit bag target</button>
-  </div>
-
-  <!-- STREET DONE MODAL -->
-  <div class="modal-overlay" id="modal-overlay">
-    <div class="modal">
-      <div class="modal-title">✅ Mark street as done</div>
-      <div class="modal-sub">Enter the street name and how many bags you dropped.</div>
-      <div style="position:relative;">
-        <input type="text" id="street-input" placeholder="e.g. Rue Saint-Denis" autocomplete="off" oninput="onStreetInput()" style="width:100%;padding:0.85rem 1rem;border:1.5px solid #ddd;border-radius:12px;font-size:1rem;outline:none;margin-bottom:0;"/>
-        <div id="street-autocomplete" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);margin-top:2px;overflow:hidden;z-index:900;max-height:160px;overflow-y:auto;"></div>
-      </div>
-      <div class="bag-counter">
-        <button class="bag-counter-btn" onclick="changeBags(-1)">−</button>
-        <div>
-          <div class="bag-counter-val" id="bag-count-display">0</div>
-          <div class="bag-counter-label">bags dropped</div>
-        </div>
-        <button class="bag-counter-btn" onclick="changeBags(1)">+</button>
-      </div>
-      <div class="modal-btns">
-        <button class="modal-cancel" onclick="closeModal()">Cancel</button>
-        <button class="modal-confirm" onclick="confirmStreetDone()">Save</button>
-      </div>
-    </div>
   </div>
 
   <!-- ZONE OPTIONS MODAL -->
@@ -539,7 +486,6 @@
 
   <div class="bottombar">
     <button class="main-btn start" id="main-btn" onclick="toggleTracking()">▶ Start</button>
-    <button class="mark-btn" id="mark-btn" onclick="openModal()" disabled>✅ Done</button>
     <button class="summary-btn" onclick="showSummary()">📊 Summary</button>
   </div>
 </div>
@@ -556,15 +502,12 @@
       <div style="width:60px"></div>
     </div>
     <div class="progress-bar-wrap">
-      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
     </div>
-    <div class="progress-label" id="progress-label">0 / 1600 bags</div>
   </div>
 
   <div class="summary-body">
     <div class="summary-card">
-      <div class="summary-card-title">📦 Bags dropped per person</div>
-      <div id="summary-bags-list"></div>
+            
     </div>
     <div class="summary-card">
       <div class="summary-card-title">⏱ Time tracking</div>
@@ -572,7 +515,6 @@
     </div>
     <div class="summary-card">
       <div class="summary-card-title">🗺 Streets covered</div>
-      <div class="street-list" id="summary-streets-list"></div>
     </div>
   </div>
 </div>
@@ -584,7 +526,6 @@ const SUPABASE_URL = 'https://okkcitmopghftoomgpet.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ra2NpdG1vcGdoZnRvb21ncGV0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MDI0NjksImV4cCI6MjA4ODM3ODQ2OX0.EyaREhDw5QSb5pcjKJ02tSuCuoA4iq-vFapliS08jH8';
 const ALLOWED_DOMAIN = 'lufa.com';
 const MANAGER_EMAIL = 'j.brassard@lufa.com';
-const TOTAL_BAGS_TARGET = 1600;
 const COLORS = ['#4285f4','#ea4335','#34a853','#fbbc04','#9c27b0','#00bcd4','#ff5722','#607d8b'];
 
 const { createClient } = supabase;
@@ -594,9 +535,8 @@ let map, mySession=null, myColor=null, myName=null, myUser=null, myCampaign=null
 let isTracking=false, watchId=null, lastPos=null, trackingStartTime=null;
 let pathPolylines={}, locationPoints={}, markers={}, myPolyline=null, myPoints=[];
 let isDrawMode=false, boundaryPoints=[], boundaryLine=null, boundaryPolygon=null, boundaryMarkers=[];
-let teamPanelVisible=false, adminPanelVisible=false, sessions={}, streetMarkerObjects={};
 let rallyMarker=null;
-let searchTimeout=null, currentBagCount=0;
+let searchTimeout=null;
 
 // ── AUTH ──────────────────────────────────────────────
 async function signInWithGoogle() {
@@ -646,7 +586,7 @@ async function loadCampaigns() {
       dateSpan.textContent = new Date(c.created_at).toLocaleDateString();
       item.appendChild(nameSpan);
       item.appendChild(dateSpan);
-      item.addEventListener('click', e => selectCampaign(c.id, c.name, c.bag_target||1600, e));
+      item.addEventListener('click', e => selectCampaign(c.id, c.name, e));
       list.appendChild(item);
     });
   } else {
@@ -654,10 +594,9 @@ async function loadCampaigns() {
   }
 }
 
-function selectCampaign(id, name, bagTarget, e) {
+function selectCampaign(id, name, e) {
   myCampaign={id,name};
   document.getElementById('campaign-input').value=name;
-  document.getElementById('bag-target-input').value=bagTarget||'';
   document.querySelectorAll('.campaign-item').forEach(el=>el.classList.remove('selected'));
   e.currentTarget.classList.add('selected');
 }
@@ -665,7 +604,6 @@ function selectCampaign(id, name, bagTarget, e) {
 async function submitCampaign() {
   const campaignName=document.getElementById('campaign-input').value.trim();
   const name=document.getElementById('name-input').value.trim();
-  const bagTargetInput=parseInt(document.getElementById('bag-target-input').value)||1600;
   if (!campaignName){showEl('name-error','Please enter a campaign name');return;}
   if (!name){showEl('name-error','Please enter your name');return;}
   const btn=document.getElementById('join-btn');
@@ -673,20 +611,21 @@ async function submitCampaign() {
   try {
     let campaignId=(myCampaign&&myCampaign.name===campaignName)?myCampaign.id:null;
     if (!campaignId) {
-      const {data:existing}=await sb.from('campaigns').select('*').eq('name',campaignName).maybeSingle();
+      const {data:existing,error:findErr}=await sb.from('campaigns').select('*').eq('name',campaignName).maybeSingle();
+      if (findErr) throw new Error('Campaign lookup failed: '+findErr.message);
       if (existing){
         campaignId=existing.id;
-        // Use stored bag target if user didn't override it
-        if(!document.getElementById('bag-target-input').value) bagTargetInput=existing.bag_target||1600;
       } else {
-        const {data:newC,error:cErr}=await sb.from('campaigns').insert({name:campaignName,bag_target:bagTargetInput}).select().single();
-        if (cErr){showEl('name-error','Error: '+cErr.message);btn.disabled=false;btn.textContent='Go to map →';return;}
+        const {data:newC,error:cErr}=await sb.from('campaigns').insert({name:campaignName}).select().single();
+        if (cErr) throw new Error('Campaign create failed: '+cErr.message);
         campaignId=newC.id;
       }
     }
-    myCampaign={id:campaignId,name:campaignName,bagTarget:bagTargetInput};
+    myCampaign={id:campaignId,name:campaignName};
     const userEmail=myUser.email;
-    const {data:existingSess}=await sb.from('sessions').select('*').eq('campaign_id',campaignId).eq('user_email',userEmail).maybeSingle();
+    if (!userEmail) throw new Error('No email found — please sign out and sign in again');
+    const {data:existingSess,error:sessErr}=await sb.from('sessions').select('*').eq('campaign_id',campaignId).eq('user_email',userEmail).maybeSingle();
+    if (sessErr) throw new Error('Session lookup failed: '+sessErr.message);
     let sessionData;
     if (existingSess) {
       await sb.from('sessions').update({last_seen:new Date().toISOString(),name}).eq('id',existingSess.id);
@@ -696,7 +635,7 @@ async function submitCampaign() {
       const usedColors=(allSess||[]).map(s=>s.color);
       const color=COLORS.find(c=>!usedColors.includes(c))||COLORS[Math.floor(Math.random()*COLORS.length)];
       const {data:newSess,error:sErr}=await sb.from('sessions').insert({name,color,campaign_id:campaignId,user_email:userEmail}).select().single();
-      if (sErr){showEl('name-error','Error: '+sErr.message);btn.disabled=false;btn.textContent='Go to map →';return;}
+      if (sErr) throw new Error('Session create failed: '+sErr.message);
       sessionData=newSess;
     }
     mySession=sessionData.id; myColor=sessionData.color; myName=name;
@@ -705,15 +644,13 @@ async function submitCampaign() {
     document.getElementById('topbar-campaign').textContent='· '+campaignName;
     if (isManager) { document.getElementById('admin-btn').style.display='flex'; document.getElementById('overflow-admin-btn').style.display='flex'; }
     showScreen('map-screen');
-    updateTopbarHeight();
-    initMap();
-  } catch(e){showEl('name-error','Error: '+e.message);btn.disabled=false;btn.textContent='Go to map →';}
+      initMap();
+  } catch(e){showEl('name-error',e.message);btn.disabled=false;btn.textContent='Go to map →';}
 }
 
 // ── MAP ───────────────────────────────────────────────
 function initMap() {
   showMapLoading();
-  updateTopbarHeight();
   map=L.map('map',{zoomControl:false}).setView([45.5017,-73.5673],13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
@@ -776,13 +713,8 @@ async function loadExistingData() {
     } catch(e){console.warn('sessions/locations load failed:',e.message);}
 
     try {
-      const {data:sm}=await sb.from('street_markers').select('*').eq('campaign_id',cid);
-      if (sm) sm.forEach(m=>placeStreetMarker(m));
-    } catch(e){console.warn('street_markers load failed:',e.message);}
-
-    try {
       const {data:rally}=await sb.from('rally_points').select('*').eq('campaign_id',cid).order('created_at',{ascending:false}).limit(1);
-      if (rally&&rally.length>0){ drawRallyMarker(rally[0].lat,rally[0].lng); const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='flex'; }
+      if (rally&&rally.length>0){ drawRallyMarker(rally[0].lat,rally[0].lng); }
     } catch(e){console.warn('rally_points load failed — table may not exist yet:',e.message);}
 
     updateTeamPanel();updateLegend();if(isManager)updateAdminPanel();
@@ -836,12 +768,6 @@ function subscribeRealtime() {
     drawBoundaryFromPoints(payload.new.points);showToast('Zone boundary updated');
   }).subscribe();
 
-  sb.channel('marker-ch').on('postgres_changes',{event:'INSERT',schema:'public',table:'street_markers',filter:'campaign_id=eq.'+cid},payload=>{
-    placeStreetMarker(payload.new);showToast('✅ '+payload.new.street_name+' — '+payload.new.bags_dropped+' bags by '+payload.new.added_by);
-  }).on('postgres_changes',{event:'DELETE',schema:'public',table:'street_markers'},payload=>{
-    removeStreetMarkerFromMap(payload.old.id);
-  }).subscribe();
-
   sb.channel('rally-ch').on('postgres_changes',{event:'INSERT',schema:'public',table:'rally_points',filter:'campaign_id=eq.'+cid},payload=>{
     drawRallyMarker(payload.new.lat,payload.new.lng);
     showToast('🚛 Rally point set by '+payload.new.set_by);
@@ -852,761 +778,61 @@ function subscribeRealtime() {
 
 }
 
-// ── SEARCH ────────────────────────────────────────────
-function onSearchInput(){
-  clearTimeout(searchTimeout);
-  const q=document.getElementById('search-input').value.trim();
-  if(q.length<3){closeSearchResults();return;}
-  searchTimeout=setTimeout(()=>searchAddress(q),400);
-}
-async function searchAddress(q){
-  try{
-    const res=await fetch('https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=5&countrycodes=ca');
-    const data=await res.json();
-    const el=document.getElementById('search-results');
-    if(!data.length){el.style.display='none';return;}
-    el.innerHTML=data.map(r=>'<div class="search-result-item" onclick="goToResult('+r.lat+','+r.lon+',\''+r.display_name.replace(/'/g,"\'").substring(0,60)+'\')">'+r.display_name.substring(0,60)+(r.display_name.length>60?'…':'')+'</div>').join('');
-    el.style.display='block';
-  }catch(e){closeSearchResults();}
-}
-function goToResult(lat,lng,name){map.setView([lat,lng],16);document.getElementById('search-input').value=name;closeSearchResults();}
-function onSearchKey(e){if(e.key==='Escape')closeSearchResults();}
-function closeSearchResults(){document.getElementById('search-results').style.display='none';}
-function jumpToMyLocation(){
-  if(!navigator.geolocation){showToast('Geolocation not supported');return;}
-  navigator.geolocation.getCurrentPosition(pos=>map.setView([pos.coords.latitude,pos.coords.longitude],16),()=>showToast('Could not get your location'));
-}
-
-// ── TRACKING ─────────────────────────────────────────
-function toggleTracking(){if(isDrawMode)return;isTracking?stopTracking():startTracking();}
-
-let wakeLock=null;
-
-async function requestWakeLock(){
-  if(!('wakeLock' in navigator)){return;}
-  try{
-    wakeLock=await navigator.wakeLock.request('screen');
-    wakeLock.addEventListener('release',()=>{wakeLock=null;});
-  }catch(err){
-    // Permission denied or not supported — silently continue
-    console.log('Wake lock not available:',err.message);
-  }
-}
-async function releaseWakeLock(){
-  if(wakeLock){try{await wakeLock.release();}catch(e){}wakeLock=null;}
-}
-
-// ── POCKET LOCK ───────────────────────────────────────
-function enablePocketLock(){
-  document.getElementById('pocket-lock').classList.add('active');
-  document.getElementById('pocket-status-text').textContent='Tracking active · '+myName;
-  document.getElementById('relock-btn').style.display='none';
-}
-function disablePocketLock(){
-  document.getElementById('pocket-lock').classList.remove('active');
-  // Show re-lock button in topbar only while tracking
-  if(isTracking) document.getElementById('relock-btn').style.display='';
-}
-// Re-acquire wake lock if page becomes visible again (e.g. user switches back)
-document.addEventListener('visibilitychange',async()=>{
-  if(isTracking&&document.visibilityState==='visible'&&!wakeLock){
-    await requestWakeLock();
-  }
-});
-
-function startTracking(){
-  if(!navigator.geolocation){showToast('Geolocation not supported');return;}
-  isTracking=true;myPoints=[];trackingStartTime=new Date();
-  sb.from('sessions').update({tracking_start:trackingStartTime.toISOString()}).eq('id',mySession);
-  document.getElementById('main-btn').className='main-btn stop';
-  document.getElementById('main-btn').textContent='⏹ Stop';
-  document.getElementById('topbar-status').textContent='Tracking…';
-  document.getElementById('mark-btn').disabled=false;
-  requestNotificationPermission();
-  requestWakeLock();
-  // Auto-lock screen after 5 seconds
-  let countdown=5;
-  const statusEl=document.getElementById('topbar-status');
-  const autoLockTimer=setInterval(()=>{
-    countdown--;
-    statusEl.textContent='Tracking… locking in '+countdown+'s';
-    if(countdown<=0){
-      clearInterval(autoLockTimer);
-      statusEl.textContent='Tracking…';
-      if(isTracking)enablePocketLock();
-    }
-  },1000);
-  startWatchPosition();
-}
-
-function stopTracking(){
-  isTracking=false;
-  if(watchId!==null){navigator.geolocation.clearWatch(watchId);watchId=null;}
-  releaseWakeLock();
-  disablePocketLock();
-  document.getElementById('relock-btn').style.display='none';
-  const stopTime=new Date();
-  sb.from('sessions').update({tracking_end:stopTime.toISOString()}).eq('id',mySession);
-  document.getElementById('main-btn').className='main-btn start';
-  document.getElementById('main-btn').textContent='▶ Start';
-  document.getElementById('topbar-status').textContent='Tracking stopped';
-  document.getElementById('mark-btn').disabled=true;
-  showToast('Route saved!');
-}
-
-function drawPath(sid,points,color){
-  if(pathPolylines[sid])map.removeLayer(pathPolylines[sid]);
-  if(points.length>1)pathPolylines[sid]=L.polyline(points,{color,weight:5,opacity:0.8}).addTo(map);
-}
-function updateMarker(sid,lat,lng,color,name){
-  if(markers[sid])map.removeLayer(markers[sid]);
-  const icon=L.divIcon({className:'',html:'<div style="background:'+color+';width:14px;height:14px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>',iconSize:[14,14],iconAnchor:[7,7]});
-  markers[sid]=L.marker([lat,lng],{icon}).bindTooltip(name,{permanent:false,direction:'top'}).addTo(map);
-}
-
-// ── STREET MODAL ──────────────────────────────────────
-function changeBags(delta){
-  currentBagCount=Math.max(0,currentBagCount+delta);
-  document.getElementById('bag-count-display').textContent=currentBagCount;
-}
-function openModal(){
-  currentBagCount=0;
-  document.getElementById('bag-count-display').textContent='0';
-  document.getElementById('street-input').value='';
-  document.getElementById('modal-overlay').classList.add('visible');
-  setTimeout(()=>document.getElementById('street-input').focus(),100);
-}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('visible');}
-async function confirmStreetDone(){
-  const streetName=document.getElementById('street-input').value.trim();
-  if(!streetName){showToast('Please enter a street name');return;}
-  const pos=lastPos||{lat:map.getCenter().lat,lng:map.getCenter().lng};
-  const {error}=await sb.from('street_markers').insert({
-    street_name:streetName,lat:pos.lat,lng:pos.lng,
-    added_by:myName,color:myColor,campaign_id:myCampaign.id,
-    bags_dropped:currentBagCount,session_id:mySession
-  });
-  if(error){showToast('Error: '+error.message);return;}
-  closeModal();
-}
-
-function placeStreetMarker(m){
-  const icon=L.divIcon({className:'',html:'<div style="background:#fff;border:2.5px solid '+m.color+';border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.25)">✅</div>',iconSize:[28,28],iconAnchor:[14,14]});
-  const bags=m.bags_dropped||0;
-  const marker=L.marker([m.lat,m.lng],{icon})
-    .bindPopup('<div style="font-family:sans-serif;min-width:160px"><div style="font-weight:700;font-size:0.95rem;margin-bottom:2px">'+m.street_name+'</div><div style="font-size:0.8rem;color:#666;margin-bottom:2px">By '+m.added_by+'</div><div style="font-size:0.85rem;color:#4d8c3f;font-weight:600;margin-bottom:8px">📦 '+bags+' bags dropped</div><button onclick="deleteStreetMarker(\''+m.id+'\')" style="background:#fce8e6;color:#d93025;border:none;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%">Remove marker</button></div>')
-    .addTo(map);
-  streetMarkerObjects[m.id]=marker;
-}
-async function deleteStreetMarker(id){map.closePopup();await sb.from('street_markers').delete().eq('id',id);removeStreetMarkerFromMap(id);}
-function removeStreetMarkerFromMap(id){if(streetMarkerObjects[id]){map.removeLayer(streetMarkerObjects[id]);delete streetMarkerObjects[id];}}
-
-// ── RALLY POINT ───────────────────────────────────────
-let isRallyTapMode=false;
-
-function placeRallyPoint(){
-  // If rally already exists, show options to move or remove
-  if(rallyMarker){
-    document.getElementById('rally-modal-sub').textContent='Rally point is already set. Move it or remove it.';
-    document.getElementById('rally-choice-btns').innerHTML=
-      '<button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">📍 Move to my GPS location</button>'+
-      '<button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">👆 Tap on map to move it</button>'+
-      '<button class="modal-cancel" style="background:#fce8e6;color:#d93025;" onclick="removeRallyPoint()">🗑 Remove rally point</button>';
-  } else {
-    document.getElementById('rally-modal-sub').textContent='Choose how to place the pin.';
-    document.getElementById('rally-choice-btns').innerHTML=
-      '<button class="modal-confirm" onclick="rallyUseGPS()" style="display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">📍 Use my current GPS location</button>'+
-      '<button class="modal-confirm" onclick="rallyUseTap()" style="background:#4285f4;display:flex;align-items:center;gap:0.5rem;justify-content:center;padding:0.65rem;">👆 Tap on the map to place it</button>'+
-      '';
-  }
-  document.getElementById('rally-modal-overlay').classList.add('visible');
-}
-
-function closeRallyModal(){
-  document.getElementById('rally-modal-overlay').classList.remove('visible');
-}
-
-function rallyUseGPS(){
-  closeRallyModal();
-  if(!navigator.geolocation){showToast('Geolocation not supported');return;}
-  showToast('Getting your location…');
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    await saveRallyPoint(pos.coords.latitude,pos.coords.longitude);
-  },()=>showToast('Could not get GPS location'));
-}
-
-function rallyUseTap(){
-  closeRallyModal();
-  isRallyTapMode=true;
-  const hint=document.getElementById('rally-tap-hint');
-  hint.style.display='flex';
-  document.getElementById('overflow-btn') && document.getElementById('overflow-btn').classList.add('active');
-  // Update overflow menu to show cancel option
-  const rallyBtn=document.querySelector('#overflow-menu .overflow-item');
-  if(rallyBtn){ rallyBtn.textContent='✕ Cancel rally placement'; rallyBtn.onclick=()=>{closeOverflowMenu();cancelRallyTap();}; }
-}
-
-function cancelRallyTap(){
-  isRallyTapMode=false;
-  const hint=document.getElementById('rally-tap-hint');
-  hint.style.display='none';
-  document.getElementById('overflow-btn') && document.getElementById('overflow-btn').classList.remove('active');
-  // Restore overflow menu
-  const rallyBtn=document.querySelector('#overflow-menu .overflow-item');
-  if(rallyBtn){ rallyBtn.textContent='🚛 Rally point'; rallyBtn.onclick=()=>{closeOverflowMenu();placeRallyPoint();}; }
-}
-
-async function saveRallyPoint(lat,lng){
-  await sb.from('rally_points').delete().eq('campaign_id',myCampaign.id);
-  await sb.from('rally_points').insert({lat,lng,campaign_id:myCampaign.id,set_by:myName});
-  drawRallyMarker(lat,lng);
-  showToast('🚛 Rally point set!');
-}
-
-function drawRallyMarker(lat,lng){
-  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='flex';
-  if(rallyMarker)map.removeLayer(rallyMarker);
-  const icon=L.divIcon({
-    className:'',
-    html:'<div style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">🚛</div>',
-    iconSize:[32,32],iconAnchor:[16,16]
-  });
-  const popupHtml='<div style="font-family:sans-serif;min-width:160px">'+
-    '<div style="font-weight:700;font-size:0.95rem;margin-bottom:4px">🚛 Rally & Reload Point</div>'+
-    '<div style="font-size:0.8rem;color:#666;margin-bottom:8px">Meet here to restock bags.</div>'+
-    '<button onclick="placeRallyPoint()" style="background:#e8f0fe;color:#1a56c4;border:none;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%;margin-bottom:6px">✏️ Move pin</button>'+
-    (isManager?'<button onclick="removeRallyPoint()" style="background:#fce8e6;color:#d93025;border:none;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;width:100%">🗑 Remove</button>':'')+
-    '</div>';
-  rallyMarker=L.marker([lat,lng],{icon})
-    .bindPopup(popupHtml)
-    .addTo(map);
-}
-
-async function removeRallyPoint(){
-  map.closePopup();
-  closeRallyModal();
-  await sb.from('rally_points').delete().eq('campaign_id',myCampaign.id);
-  if(rallyMarker){map.removeLayer(rallyMarker);rallyMarker=null;}
-  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
-  showToast('Rally point removed');
-}
-
-// ── SUMMARY ───────────────────────────────────────────
-async function showSummary(){
-  const cid=myCampaign.id;
-  document.getElementById('summary-campaign-name').textContent=myCampaign.name;
-
-  // Load all street markers for this campaign
-  const {data:markers_data}=await sb.from('street_markers').select('*').eq('campaign_id',cid);
-  const {data:sess_data}=await sb.from('sessions').select('*').eq('campaign_id',cid);
-
-  // All sessions including mine
-  const allSessions=[{id:mySession,name:myName,color:myColor,tracking_start:null,tracking_end:null},...Object.values(sessions)];
-  // Merge with db data for start/end times
-  const sessMap={};
-  if(sess_data)sess_data.forEach(s=>sessMap[s.id]=s);
-  allSessions.forEach(s=>{if(sessMap[s.id]){s.tracking_start=sessMap[s.id].tracking_start;s.tracking_end=sessMap[s.id].tracking_end;}});
-
-  // Bags per person
-  const bagsByPerson={};
-  const streetsByPerson={};
-  if(markers_data){
-    markers_data.forEach(m=>{
-      const key=m.added_by;
-      bagsByPerson[key]=(bagsByPerson[key]||0)+(m.bags_dropped||0);
-      if(!streetsByPerson[key])streetsByPerson[key]=[];
-      streetsByPerson[key].push({name:m.street_name,bags:m.bags_dropped||0,color:m.color});
-    });
-  }
-
-  const totalBags=Object.values(bagsByPerson).reduce((a,b)=>a+b,0);
-  const bagTarget=myCampaign.bagTarget||TOTAL_BAGS_TARGET;
-  const pct=Math.min(100,Math.round((totalBags/bagTarget)*100));
-  document.getElementById('progress-fill').style.width=pct+'%';
-  document.getElementById('progress-label').textContent=totalBags.toLocaleString()+' / '+bagTarget.toLocaleString()+' bags ('+pct+'%)';
-
-  // Bags list
-  const bagsList=document.getElementById('summary-bags-list');
-  const sortedSess=[...allSessions].sort((a,b)=>(bagsByPerson[b.name]||0)-(bagsByPerson[a.name]||0));
-  bagsList.innerHTML=sortedSess.map(s=>'<div class="stat-row"><div class="stat-name"><div class="stat-dot" style="background:'+s.color+'"></div>'+s.name+'</div><div><div class="stat-val">📦 '+(bagsByPerson[s.name]||0)+'</div><div class="stat-sub">'+(streetsByPerson[s.name]||[]).length+' streets</div></div></div>').join('');
-
-  // Time list
-  const timeList=document.getElementById('summary-time-list');
-  timeList.innerHTML=sortedSess.map(s=>{
-    const start=s.tracking_start?new Date(s.tracking_start):null;
-    const end=s.tracking_end?new Date(s.tracking_end):null;
-    const startStr=start?start.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'—';
-    const endStr=end?end.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'active';
-    let duration='';
-    if(start&&end){const mins=Math.round((end-start)/60000);duration=mins+'m';}
-    return '<div class="stat-row"><div class="stat-name"><div class="stat-dot" style="background:'+s.color+'"></div>'+s.name+'</div><div style="text-align:right"><div class="stat-val" style="font-size:0.8rem">'+startStr+' → '+endStr+'</div><div class="stat-sub">'+duration+'</div></div></div>';
-  }).join('');
-
-  // Streets list — all streets done, grouped
-  const streetsList=document.getElementById('summary-streets-list');
-  if(!markers_data||!markers_data.length){
-    streetsList.innerHTML='<div style="font-size:0.85rem;color:#999">No streets marked as done yet</div>';
-  } else {
-    streetsList.innerHTML=markers_data.map(m=>'<div class="street-tag"><div style="width:8px;height:8px;border-radius:50%;background:'+m.color+';flex-shrink:0"></div>'+m.street_name+'<span class="street-bags">· '+( m.bags_dropped||0)+' bags · '+m.added_by+'</span></div>').join('');
-  }
-
-  showScreen('summary-screen');
-}
-
-// ── ADMIN ─────────────────────────────────────────────
-function toggleAdminPanel(){
-  adminPanelVisible=!adminPanelVisible;
-  if(teamPanelVisible){teamPanelVisible=false;document.getElementById('team-panel').classList.remove('visible');}
-  document.getElementById('admin-panel').classList.toggle('visible',adminPanelVisible);
-  if(adminPanelVisible)updateAdminPanel();
-}
-function updateAdminPanel(){
-  const el=document.getElementById('admin-list');
-  const others=Object.values(sessions);
-  if(!others.length){el.innerHTML='<div style="font-size:0.8rem;color:#999;margin-bottom:0.5rem">No other members yet</div>';return;}
-  el.innerHTML=others.map(s=>'<div class="admin-member"><div class="admin-member-info"><div class="admin-dot" style="background:'+s.color+'"></div><div class="admin-name">'+s.name+'</div></div><button class="admin-del" onclick="deleteSession(\''+s.id+'\')">✕</button></div>').join('');
-}
-async function deleteSession(sid){
-  if(!confirm('Remove this member from the active team?\n\nTheir path and street markers will stay visible on the map.'))return;
-  await sb.from('sessions').delete().eq('id',sid);
-  if(markers[sid]){map.removeLayer(markers[sid]);delete markers[sid];}
-  delete sessions[sid];
-  updateTeamPanel();updateLegend();updateAdminPanel();
-  showToast('Member removed from active team');
-}
-async function clearAllSessions(){
-  if(!confirm('Clear ALL team members and paths? This cannot be undone.'))return;
-  const cid=myCampaign.id;
-  const otherIds=Object.keys(sessions);
-  if(otherIds.length){await sb.from('locations').delete().in('session_id',otherIds);await sb.from('sessions').delete().in('id',otherIds);}
-  await sb.from('locations').delete().eq('session_id',mySession);
-  myPoints=[];if(myPolyline){map.removeLayer(myPolyline);myPolyline=null;}
-  Object.values(pathPolylines).forEach(p=>map.removeLayer(p));pathPolylines={};
-  Object.values(markers).forEach(m=>map.removeLayer(m));markers={};
-  sessions={};updateTeamPanel();updateLegend();updateAdminPanel();
-  showToast('All paths cleared!');
-}
-
-// ── BOUNDARY ─────────────────────────────────────────
-function toggleDrawMode(){
-  if(isTracking){showToast('Stop tracking first');return;}
-  // If already in draw mode, cancel it
-  if(isDrawMode){cancelDraw();return;}
-  // If a zone already exists, show options
-  if(boundaryPolygon){
-    openZoneModal();
-  } else {
-    // No zone yet — go straight to drawing
-    startDrawMode();
-  }
-}
-function openZoneModal(){
-  const btns=document.getElementById('zone-modal-btns');
-  btns.innerHTML='';
-  // Add zone on top of existing
-  const addBtn=document.createElement('button');
-  addBtn.className='modal-confirm';
-  addBtn.style.cssText='background:#4285f4;color:#fff;';
-  addBtn.textContent='➕ Add another zone';
-  addBtn.onclick=()=>{closeZoneModal();startDrawMode(false);};
-  btns.appendChild(addBtn);
-  // Replace existing zone
-  const replaceBtn=document.createElement('button');
-  replaceBtn.className='modal-confirm';
-  replaceBtn.textContent='✏️ Replace current zone';
-  replaceBtn.onclick=()=>{closeZoneModal();startDrawMode(true);};
-  btns.appendChild(replaceBtn);
-  // Erase zone
-  const eraseBtn=document.createElement('button');
-  eraseBtn.className='modal-cancel';
-  eraseBtn.style.cssText='background:#fce8e6;color:#d93025;';
-  eraseBtn.textContent='🗑 Erase zone';
-  eraseBtn.onclick=()=>{closeZoneModal();clearBoundary();};
-  btns.appendChild(eraseBtn);
-  document.getElementById('zone-modal-overlay').classList.add('visible');
-}
-function closeZoneModal(){
-  document.getElementById('zone-modal-overlay').classList.remove('visible');
-}
-function startDrawMode(replaceExisting=false){
-  isDrawMode=true;
-  const mainBtn=document.getElementById('main-btn');
-  document.getElementById('draw-hint').style.display='flex';
-  mainBtn.className='main-btn done-draw';mainBtn.textContent='✓ Finish zone';mainBtn.onclick=finishBoundary;
-  document.getElementById('mark-btn').disabled=true;
-  boundaryPoints=[];boundaryMarkers.forEach(m=>map.removeLayer(m));boundaryMarkers=[];
-  if(boundaryLine){map.removeLayer(boundaryLine);boundaryLine=null;}
-  if(replaceExisting&&boundaryPolygon){map.removeLayer(boundaryPolygon);boundaryPolygon=null;}
-  // Update overflow menu to show cancel
-  const zoneBtn=document.getElementById('overflow-zone-btn');
-  if(zoneBtn){zoneBtn.textContent='✕ Cancel zone drawing';zoneBtn.onclick=()=>{closeOverflowMenu();cancelDraw();};}
-}
-function cancelDraw(){
-  isDrawMode=false;
-  document.getElementById('draw-hint').style.display='none';
-  boundaryMarkers.forEach(m=>map.removeLayer(m));boundaryMarkers=[];
-  if(boundaryLine){map.removeLayer(boundaryLine);boundaryLine=null;}
-  boundaryPoints=[];
-  document.getElementById('main-btn').className='main-btn start';
-  document.getElementById('main-btn').textContent='▶ Start';
-  document.getElementById('main-btn').onclick=toggleTracking;
-  document.getElementById('mark-btn').disabled=!isTracking;
-  // Restore overflow menu
-  const zoneBtn=document.getElementById('overflow-zone-btn');
-  if(zoneBtn){zoneBtn.textContent='✏️ Zone';zoneBtn.onclick=()=>{closeOverflowMenu();toggleDrawMode();};}
-}
-function undoLastPoint(){
-  if(!boundaryPoints.length)return;
-  boundaryPoints.pop();
-  const lastMarker=boundaryMarkers.pop();
-  if(lastMarker)map.removeLayer(lastMarker);
-  if(boundaryLine)map.removeLayer(boundaryLine);
-  boundaryLine=null;
-  if(boundaryPoints.length>1)
-    boundaryLine=L.polyline([...boundaryPoints,boundaryPoints[0]],{color:'#fbbc04',weight:2.5,dashArray:'6 4',opacity:0.9}).addTo(map);
-  showToast('Last point removed');
-}
-async function clearBoundary(){
-  if(!confirm('Erase all zone boundaries for this campaign?'))return;
-  await sb.from('boundary').delete().eq('campaign_id',myCampaign.id);
-  clearAllBoundaryPolygons();
-  // Close admin panel if open
-  if(adminPanelVisible){adminPanelVisible=false;document.getElementById('admin-panel').classList.remove('visible');}
-  showToast('Zone erased');
-}
-async function editBagTarget(){
-  const current=myCampaign.bagTarget||1600;
-  const val=prompt('Enter new bag target for this campaign:',current);
-  if(val===null)return;
-  const num=parseInt(val);
-  if(isNaN(num)||num<1){showToast('Invalid number');return;}
-  const {error}=await sb.from('campaigns').update({bag_target:num}).eq('id',myCampaign.id);
-  if(error){showToast('Error: '+error.message);return;}
-  myCampaign.bagTarget=num;
-  showToast('🎯 Bag target updated to '+num.toLocaleString());
-  adminPanelVisible=false;
-  document.getElementById('admin-panel').classList.remove('visible');
-}
-function onMapClick(e){
-  // Rally tap mode takes priority
-  if(isRallyTapMode){
-    cancelRallyTap();
-    saveRallyPoint(e.latlng.lat,e.latlng.lng);
-    return;
-  }
-  if(!isDrawMode)return;
-  const {lat,lng}=e.latlng;boundaryPoints.push([lat,lng]);
-  const dot=L.circleMarker([lat,lng],{radius:5,color:'#fbbc04',fillColor:'#fbbc04',fillOpacity:1,weight:2}).addTo(map);
-  boundaryMarkers.push(dot);
-  if(boundaryLine)map.removeLayer(boundaryLine);
-  if(boundaryPoints.length>1)boundaryLine=L.polyline([...boundaryPoints,boundaryPoints[0]],{color:'#fbbc04',weight:2.5,dashArray:'6 4',opacity:0.9}).addTo(map);
-}
-async function finishBoundary(){
-  if(boundaryPoints.length<3){showToast('Add at least 3 points');return;}
-  boundaryMarkers.forEach(m=>map.removeLayer(m));boundaryMarkers=[];
-  if(boundaryLine){map.removeLayer(boundaryLine);boundaryLine=null;}
-  // If no polygon on map (replacing), delete old and insert new
-  // If polygon exists (adding), just insert alongside
-  if(!boundaryPolygon){
-    await sb.from('boundary').delete().eq('campaign_id',myCampaign.id);
-  }
-  await sb.from('boundary').insert({points:boundaryPoints,campaign_id:myCampaign.id});
-  drawBoundaryFromPoints(boundaryPoints);cancelDraw();showToast('Zone saved!');
-}
-// Store all boundary polygons (for multi-zone support)
-let boundaryPolygons=[];
-function drawBoundaryFromPoints(points,fitBounds=true){
-  const poly=L.polygon(points,{color:'#4d8c3f',weight:2.5,dashArray:'8 5',fillColor:'#4d8c3f',fillOpacity:0.06}).addTo(map);
-  boundaryPolygons.push(poly);
-  // Keep boundaryPolygon pointing to the last one for backwards compat
-  boundaryPolygon=poly;
-  if(fitBounds&&boundaryPolygons.length===1) map.fitBounds(poly.getBounds(),{padding:[40,40]});
-}
-function clearAllBoundaryPolygons(){
-  boundaryPolygons.forEach(p=>map.removeLayer(p));
-  boundaryPolygons=[];
-  boundaryPolygon=null;
-}
-
-// ── LEGEND & TEAM ─────────────────────────────────────
-function updateLegend(){
-  const el=document.getElementById('legend-items');
-  const all=[{id:mySession,name:myName,color:myColor},...Object.values(sessions)];
-  el.innerHTML=all.filter(s=>s&&s.name).map(s=>'<div class="legend-item"><div class="legend-line" style="background:'+s.color+'"></div><div class="legend-name">'+s.name+'</div></div>').join('')+'<div class="legend-item" style="margin-top:4px"><span style="font-size:12px">✅</span><div class="legend-name" style="margin-left:2px">Street done</div></div>';
-}
-function toggleTeamPanel(){
-  teamPanelVisible=!teamPanelVisible;
-  if(adminPanelVisible){adminPanelVisible=false;document.getElementById('admin-panel').classList.remove('visible');}
-  document.getElementById('team-panel').classList.toggle('visible',teamPanelVisible);
-  updateTeamPanel();
-}
-function updateTeamPanel(){
-  const el=document.getElementById('team-list');
-  const all=[{id:mySession,name:myName,color:myColor,last_seen:new Date().toISOString()},...Object.values(sessions)];
-  el.innerHTML=all.filter(s=>s&&s.name).map(s=>'<div class="team-member"><div class="member-dot" style="background:'+s.color+'"></div><div><div class="member-name">'+s.name+(s.id===mySession?' (you)':'')+'</div><div class="member-time">'+(s.last_seen?timeSince(new Date(s.last_seen)):'')+'</div></div></div>').join('');
-}
-function timeSince(date){
-  const sec=Math.floor((new Date()-date)/1000);
-  if(sec<60)return'just now';if(sec<3600)return Math.floor(sec/60)+'m ago';return Math.floor(sec/3600)+'h ago';
-}
-
-function showScreen(id){
-  document.querySelectorAll('.screen, #summary-screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-async function goBackToMain(){
-  if(isTracking){
-    if(!confirm('You are still tracking. Going back will stop tracking. Continue?'))return;
-    stopTracking();
-  }
-  if(map){map.remove();map=null;}
-  mySession=null;myColor=null;myName=null;myCampaign=null;
-  isTracking=false;watchId=null;lastPos=null;trackingStartTime=null;
-  pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
-  boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
-  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;overflowMenuVisible=false;
-  releaseWakeLock();
-  wakeLock=null;
-  if(realtimeHeartbeatInterval){clearInterval(realtimeHeartbeatInterval);realtimeHeartbeatInterval=null;}
-  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
-  document.getElementById('relock-btn').style.display='none';
-  document.getElementById('admin-btn').style.display='none';
-  await loadCampaigns();
-  document.getElementById('join-btn').disabled=false;
-  document.getElementById('join-btn').textContent='Go to map →';
-  showScreen('campaign-screen');
-}
-
-async function logOut(){
-  if(isTracking){
-    if(!confirm('You are still tracking. Logging out will stop tracking. Continue?'))return;
-    stopTracking();
-  }
-  await sb.auth.signOut();
-  if(map){map.remove();map=null;}
-  // Reset all state
-  mySession=null;myColor=null;myName=null;myCampaign=null;myUser=null;isManager=false;
-  isTracking=false;watchId=null;lastPos=null;trackingStartTime=null;
-  pathPolylines={};locationPoints={};markers={};myPolyline=null;myPoints=[];
-  boundaryPoints=[];boundaryLine=null;boundaryPolygon=null;boundaryMarkers=[];boundaryPolygons=[];
-  sessions={};streetMarkerObjects={};rallyMarker=null;isRallyTapMode=false;overflowMenuVisible=false;
-  const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
-  releaseWakeLock();
-  wakeLock=null;if(realtimeHeartbeatInterval){clearInterval(realtimeHeartbeatInterval);realtimeHeartbeatInterval=null;}
-  document.getElementById('relock-btn').style.display='none';
-  showScreen('auth-screen');
-}
-function showEl(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
-
-document.getElementById('name-input').addEventListener('keydown',e=>{if(e.key==='Enter')submitCampaign();});
-document.getElementById('campaign-input').addEventListener('keydown',e=>{if(e.key==='Enter')submitCampaign();});
-document.getElementById('street-input').addEventListener('keydown',e=>{if(e.key==='Enter')confirmStreetDone();});
-
-// ── LOADING OVERLAY ───────────────────────────────────
-function showMapLoading(){ const el=document.getElementById('map-loading');if(el)el.style.display='flex'; }
-function hideMapLoading(){ const el=document.getElementById('map-loading');if(el)el.style.display='none'; }
-
-// ── REALTIME RECONNECT ────────────────────────────────
-let realtimeHeartbeatInterval=null;
-let lastRealtimeActivity=Date.now();
-
-function markRealtimeActivity(){
-  lastRealtimeActivity=Date.now();
-}
-
-function setupReconnect(){
-  // 1. Reconnect on network coming back online
-  window.addEventListener('online',()=>{
-    showToast('Connection restored — reconnecting…');
-    setTimeout(()=>{ resubscribeRealtime(); },1500);
-  });
-
-  // 2. Reconnect when app comes back to foreground
-  document.addEventListener('visibilitychange',()=>{
-    if(document.visibilityState==='visible' && myCampaign){
-      // Always reload data when coming back — may have missed events
-      setTimeout(()=>{
-        loadExistingData();
-        // Check if channels are still alive
-        resubscribeRealtime();
-      }, 800);
-    }
-  });
-
-  // 3. Heartbeat every 45s — if no realtime activity for 90s, force resubscribe
-  realtimeHeartbeatInterval=setInterval(()=>{
-    if(!myCampaign) return;
-    const silent=Date.now()-lastRealtimeActivity;
-    if(silent > 90000){
-      console.log('Realtime silent for 90s — resubscribing');
-      resubscribeRealtime();
-    }
-  }, 45000);
-}
-
-function resubscribeRealtime(){
-  if(!myCampaign) return;
-  try{
-    sb.removeAllChannels();
-    subscribeRealtime();
-    loadExistingData();
-    lastRealtimeActivity=Date.now();
-  } catch(e){ console.warn('resubscribe failed:',e); }
-}
-
-// ── TOPBAR HEIGHT (dynamic searchbar positioning) ────────────────
-function updateTopbarHeight(){
-  const tb=document.querySelector('.topbar');
-  if(tb){
-    const h=tb.offsetHeight;
-    const ms=document.getElementById('map-screen');
-    if(ms) ms.style.setProperty('--topbar-h',(h+6)+'px');
-  }
-}
-window.addEventListener('resize',updateTopbarHeight);
-
-// ── CENTRE ON RALLY ───────────────────────────────────────────────
-function centreOnRally(){
-  if(rallyMarker){
-    const ll=rallyMarker.getLatLng();
-    map.setView([ll.lat,ll.lng],16);
-    rallyMarker.openPopup();
-  } else {
-    showToast('No rally point set yet');
-  }
-}
-
-// ── OVERFLOW MENU ─────────────────────────────────────────
-let overflowMenuVisible=false;
-function toggleOverflowMenu(){
-  overflowMenuVisible=!overflowMenuVisible;
-  document.getElementById('overflow-menu').classList.toggle('visible',overflowMenuVisible);
-  // Close other panels
-  if(overflowMenuVisible){
-    if(teamPanelVisible){teamPanelVisible=false;document.getElementById('team-panel').classList.remove('visible');}
-    if(adminPanelVisible){adminPanelVisible=false;document.getElementById('admin-panel').classList.remove('visible');}
-  }
-}
-function closeOverflowMenu(){
-  overflowMenuVisible=false;
-  document.getElementById('overflow-menu').classList.remove('visible');
-}
-// Close overflow menu on map tap
-// ── DARK MODE ─────────────────────────────────────────
-function toggleDarkMode(){
-  const dark=document.body.classList.toggle('dark');
-  localStorage.setItem('lufa-dark',dark?'1':'0');
-  const overflowDarkBtn=document.getElementById('overflow-dark-btn'); if(overflowDarkBtn) overflowDarkBtn.textContent=dark?'☀️ Light mode':'🌙 Dark mode';
-}
-(function(){
-  if(localStorage.getItem('lufa-dark')==='1'){
-    document.body.classList.add('dark');
-    // btn not in DOM yet — will be set after map loads
-  }
-})();
-
-// ── CAMPAIGN HISTORY ──────────────────────────────────
-async function showHistory(){
-  showScreen('history-screen');
-  const el=document.getElementById('history-list');
-  el.innerHTML='<div style="color:#999;font-size:0.9rem;text-align:center;margin-top:2rem;">Loading…</div>';
-  const {data:campaigns}=await sb.from('campaigns').select('*').order('created_at',{ascending:false}).limit(30);
-  if(!campaigns||!campaigns.length){el.innerHTML='<div style="color:#999;font-size:0.9rem;text-align:center;margin-top:2rem;">No campaigns yet.</div>';return;}
-  // For each campaign load aggregate data
-  const cids=campaigns.map(c=>c.id);
-  const {data:markers}=await sb.from('street_markers').select('campaign_id,bags_dropped').in('campaign_id',cids);
-  const {data:sessions_data}=await sb.from('sessions').select('campaign_id,name,color').in('campaign_id',cids);
-  // Build lookup maps
-  const bagsByCampaign={};
-  const streetsByCampaign={};
-  (markers||[]).forEach(m=>{
-    bagsByCampaign[m.campaign_id]=(bagsByCampaign[m.campaign_id]||0)+(m.bags_dropped||0);
-    streetsByCampaign[m.campaign_id]=(streetsByCampaign[m.campaign_id]||0)+1;
-  });
-  const membersByCampaign={};
-  (sessions_data||[]).forEach(s=>{
-    if(!membersByCampaign[s.campaign_id])membersByCampaign[s.campaign_id]=[];
-    membersByCampaign[s.campaign_id].push(s);
-  });
-  el.innerHTML=campaigns.map(c=>{
-    const bags=bagsByCampaign[c.id]||0;
-    const streets=streetsByCampaign[c.id]||0;
-    const members=membersByCampaign[c.id]||[];
-    const pct=Math.min(100,Math.round((bags/TOTAL_BAGS_TARGET)*100));
-    const date=new Date(c.created_at).toLocaleDateString('fr-CA',{month:'short',day:'numeric',year:'numeric'});
-    const dotsHtml=members.slice(0,6).map(m=>'<div style="width:10px;height:10px;border-radius:50%;background:'+m.color+';flex-shrink:0;" title="'+m.name+'"></div>').join('');
-    return '<div style="background:#fff;border-radius:14px;padding:1rem;box-shadow:0 1px 4px rgba(0,0,0,0.07);">'+
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">'+
-        '<div style="font-weight:700;font-size:0.95rem;color:#1a1a1a;">'+c.name+'</div>'+
-        '<div style="font-size:0.75rem;color:#999;">'+date+'</div>'+
-      '</div>'+
-      '<div style="background:#e8f5e9;border-radius:20px;height:8px;margin-bottom:0.4rem;overflow:hidden;">'+
-        '<div style="background:#4d8c3f;height:100%;border-radius:20px;width:'+pct+'%;transition:width 0.4s;"></div>'+
-      '</div>'+
-      '<div style="display:flex;justify-content:space-between;align-items:center;">'+
-        '<div style="font-size:0.8rem;color:#555;">📦 '+bags.toLocaleString()+' bags · ✅ '+streets+' streets</div>'+
-        '<div style="display:flex;gap:3px;align-items:center;">'+dotsHtml+(members.length>6?'<div style="font-size:0.7rem;color:#999;margin-left:2px;">+'+( members.length-6)+'</div>':'')+'</div>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-}
-
-// ── STREET AUTOCOMPLETE ───────────────────────────────
-let streetSearchTimeout=null;
-function onStreetInput(){
-  clearTimeout(streetSearchTimeout);
-  const q=document.getElementById('street-input').value.trim();
-  if(q.length<3){document.getElementById('street-autocomplete').style.display='none';return;}
-  streetSearchTimeout=setTimeout(()=>fetchStreetSuggestions(q),350);
-}
-async function fetchStreetSuggestions(q){
-  try{
-    const center=lastPos||{lat:45.5017,lng:-73.5673};
-    const url='https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=5&countrycodes=ca&bounded=1&viewbox='+(center.lng-0.05)+','+(center.lat+0.05)+','+(center.lng+0.05)+','+(center.lat-0.05);
-    const res=await fetch(url,{headers:{'Accept-Language':'fr,en'}});
-    const data=await res.json();
-    const el=document.getElementById('street-autocomplete');
-    if(!data.length){el.style.display='none';return;}
-    // Build items using DOM to avoid any quoting issues
-    el.innerHTML='';
-    data.forEach(r=>{
-      const parts=r.display_name.split(',');
-      const short=parts[0].trim();
-      const item=document.createElement('div');
-      item.style.cssText='padding:0.6rem 0.85rem;font-size:0.85rem;color:#333;cursor:pointer;border-bottom:1px solid #f0f0f0;';
-      item.textContent=short;
-      const sub=document.createElement('span');
-      sub.style.cssText='font-size:0.75rem;color:#999;margin-left:0.4rem;';
-      sub.textContent=(parts[1]||'').trim();
-      item.appendChild(sub);
-      item.addEventListener('click',()=>selectStreetSuggestion(short));
-      el.appendChild(item);
-    });
-    el.style.display='block';
-  }catch(e){document.getElementById('street-autocomplete').style.display='none';}
-}
-function selectStreetSuggestion(name){
-  document.getElementById('street-input').value=name;
-  document.getElementById('street-autocomplete').style.display='none';
-}
-
 // ── BATTERY-FRIENDLY TRACKING ─────────────────────────
 
+let backupTrackInterval=null;
+let lastInsertedPos=null;
+let lastInsertedTime=0;
+
 function startWatchPosition(){
+  // maximumAge:0 — never use cached position, always request fresh from GPS chip
+  // timeout:8000 — wait up to 8s for a fix before giving up on that ping
+  const gpsOpts={enableHighAccuracy:true, maximumAge:0, timeout:8000};
+
   watchId=navigator.geolocation.watchPosition(async pos=>{
-    await handleNewPosition(pos.coords.latitude,pos.coords.longitude);
-  },err=>showToast('Location error: '+err.message),{enableHighAccuracy:true,maximumAge:5000,timeout:10000});
+    await handleNewPosition(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+  }, err=>console.warn('watchPosition error:',err.code, err.message), gpsOpts);
+
+  // Backup every 5s — forces a fresh fix if watchPosition is throttled by OS
+  backupTrackInterval=setInterval(()=>{
+    if(!isTracking) return;
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      await handleNewPosition(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+    }, ()=>{}, {enableHighAccuracy:true, maximumAge:0, timeout:8000});
+  }, 5000);
 }
 
-async function handleNewPosition(lat,lng){
-  lastPos={lat,lng};myPoints.push([lat,lng]);
-  if(myPolyline)map.removeLayer(myPolyline);
+async function handleNewPosition(lat, lng, accuracy){
+  const now=Date.now();
+
+  // Reject if accuracy worse than 50m — cell tower / wifi estimate, not GPS
+  if(accuracy && accuracy > 50) return;
+
+  // Reject if less than 2 seconds since last insert (debounce rapid duplicate pings)
+  if(now - lastInsertedTime < 2000) return;
+
+  // Reject if moved less than 2 metres (person standing still)
+  if(lastInsertedPos){
+    const dlat=lat-lastInsertedPos.lat;
+    const dlng=lng-lastInsertedPos.lng;
+    const distM=Math.sqrt(dlat*dlat+dlng*dlng)*111320;
+    if(distM < 2) return;
+  }
+
+  lastInsertedPos={lat,lng};
+  lastInsertedTime=now;
+  lastPos={lat,lng};
+  myPoints.push([lat,lng]);
+  if(myPolyline) map.removeLayer(myPolyline);
   myPolyline=L.polyline(myPoints,{color:myColor,weight:5,opacity:0.85}).addTo(map);
   updateMarker(mySession,lat,lng,myColor,myName);
-  if(myPoints.length===1)map.setView([lat,lng],16);
-  await sb.from('locations').insert({session_id:mySession,lat,lng,campaign_id:myCampaign.id});
+  if(myPoints.length===1) map.setView([lat,lng],16);
+  // Store timestamp for accurate path replay
+  await sb.from('locations').insert({
+    session_id:mySession, lat, lng,
+    recorded_at: new Date(now).toISOString(),
+    campaign_id:myCampaign.id
+  });
 }
 
 // ── PUSH NOTIFICATIONS (rally point) ─────────────────
