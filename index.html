@@ -486,7 +486,7 @@
     <button class="pocket-unlock" onclick="disablePocketLock()">Tap to Unlock</button>
   </div>
 
-  <div class="bottombar">
+  <div class="bottombar" id="bottombar" style="display:none;">
     <button class="main-btn start" id="main-btn" onclick="toggleTracking()">▶ Start</button>
     <button class="summary-btn" onclick="showSummary()">📊 Summary</button>
   </div>
@@ -661,6 +661,7 @@ function initMap() {
   map.on('click',e=>{onMapClick(e);closeSearchResults();closeOverflowMenu();});
   document.getElementById("legend").style.display="";
   document.getElementById("searchbar").style.display="";
+  document.getElementById("bottombar").style.display="";
   loadExistingData();
   subscribeRealtime();
   setupReconnect();
@@ -970,6 +971,7 @@ async function goBackToMain(){
   document.getElementById('admin-btn').style.display='none';
   const sb2=document.getElementById('searchbar');if(sb2)sb2.style.display='none';
   document.getElementById('legend').style.display='none';
+  document.getElementById('bottombar').style.display='none';
   await loadCampaigns();
   document.getElementById('join-btn').disabled=false;
   document.getElementById('join-btn').textContent='Go to map →';
@@ -997,6 +999,7 @@ async function logOut(){
   document.getElementById('relock-btn').style.display='none';
   const sb3=document.getElementById('searchbar');if(sb3)sb3.style.display='none';
   document.getElementById('legend').style.display='none';
+  document.getElementById('bottombar').style.display='none';
   showScreen('auth-screen');
 }
 
