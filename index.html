@@ -110,8 +110,7 @@
   .admin-clear { width: 100%; margin-top: 0.6rem; padding: 0.6rem; background: #fce8e6; color: #d93025; border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
 
   /* SUMMARY SCREEN */
-  #summary-screen { display: none; flex-direction: column; height: 100vh; height: 100dvh; background: #f5f5f5; overflow-y: auto; }
-  #summary-screen.active { display: flex; }
+  #summary-screen { background: #f5f5f5; overflow-y: auto; align-items: stretch; justify-content: flex-start; padding: 0; }
   .summary-header { background: #4d8c3f; color: #fff; padding: 1.25rem 1rem 1rem; flex-shrink: 0; }
   .summary-header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
   .summary-back { background: rgba(255,255,255,0.2); border: none; color: #fff; border-radius: 8px; padding: 0.4rem 0.75rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; }
@@ -404,7 +403,7 @@
     </div>
   </div>
 
-  <div class="searchbar">
+  <div class="searchbar" id="searchbar">
     <div class="search-input-wrap">
       <input class="search-input" id="search-input" type="text" placeholder="Search address…" autocomplete="off" oninput="onSearchInput()" onkeydown="onSearchKey(event)"/>
       <div class="search-results" id="search-results"></div>
@@ -420,7 +419,7 @@
     <button onclick="cancelDraw()" style="background:#fff;border:none;color:#c0392b;border-radius:8px;padding:4px 12px;cursor:pointer;font-weight:700;font-size:0.8rem;flex-shrink:0;">Cancel</button>
   </div>
 
-  <div class="legend" id="legend">
+  <div class="legend" id="legend" style="display:none;">
     <div class="legend-title">Legend</div>
     <div id="legend-items"></div>
   </div>
@@ -494,7 +493,7 @@
 </div>
 
 <!-- SUMMARY SCREEN -->
-<div id="summary-screen">
+<div id="summary-screen" class="screen">
   <div class="summary-header">
     <div class="summary-header-top">
       <button class="summary-back" onclick="showScreen('map-screen')">← Back</button>
@@ -660,6 +659,8 @@ function initMap() {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
   map.on('click',e=>{onMapClick(e);closeSearchResults();closeOverflowMenu();});
+  document.getElementById("legend").style.display="";
+  document.getElementById("searchbar").style.display="";
   loadExistingData();
   subscribeRealtime();
   setupReconnect();
@@ -967,6 +968,8 @@ async function goBackToMain(){
   const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
   document.getElementById('relock-btn').style.display='none';
   document.getElementById('admin-btn').style.display='none';
+  const sb2=document.getElementById('searchbar');if(sb2)sb2.style.display='none';
+  document.getElementById('legend').style.display='none';
   await loadCampaigns();
   document.getElementById('join-btn').disabled=false;
   document.getElementById('join-btn').textContent='Go to map →';
@@ -992,6 +995,8 @@ async function logOut(){
   sb.removeAllChannels();
   const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
   document.getElementById('relock-btn').style.display='none';
+  const sb3=document.getElementById('searchbar');if(sb3)sb3.style.display='none';
+  document.getElementById('legend').style.display='none';
   showScreen('auth-screen');
 }
 
