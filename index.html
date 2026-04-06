@@ -372,7 +372,7 @@
 
 <!-- MAP SCREEN -->
 <div id="map-screen" class="screen">
-  <div class="topbar">
+  <div class="topbar" id="topbar" style="display:none;">
     <div class="topbar-left">
       <button class="icon-btn" onclick="goBackToMain()" style="flex-shrink:0">← Back</button>
       <div class="user-dot" id="my-dot"></div>
@@ -400,10 +400,7 @@
     </div>
   </div>
 
-    </div>
-  </div>
-
-  <div class="searchbar" id="searchbar">
+  <div class="searchbar" id="searchbar" style="display:none;">
     <div class="search-input-wrap">
       <input class="search-input" id="search-input" type="text" placeholder="Search address…" autocomplete="off" oninput="onSearchInput()" onkeydown="onSearchKey(event)"/>
       <div class="search-results" id="search-results"></div>
@@ -659,6 +656,7 @@ function initMap() {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
   map.on('click',e=>{onMapClick(e);closeSearchResults();closeOverflowMenu();});
+  document.getElementById("topbar").style.display="";
   document.getElementById("legend").style.display="";
   document.getElementById("searchbar").style.display="";
   document.getElementById("bottombar").style.display="";
@@ -969,6 +967,7 @@ async function goBackToMain(){
   const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
   document.getElementById('relock-btn').style.display='none';
   document.getElementById('admin-btn').style.display='none';
+  document.getElementById('topbar').style.display='none';
   const sb2=document.getElementById('searchbar');if(sb2)sb2.style.display='none';
   document.getElementById('legend').style.display='none';
   document.getElementById('bottombar').style.display='none';
@@ -997,6 +996,7 @@ async function logOut(){
   sb.removeAllChannels();
   const cb=document.getElementById('center-rally-btn');if(cb)cb.style.display='none';
   document.getElementById('relock-btn').style.display='none';
+  document.getElementById('topbar').style.display='none';
   const sb3=document.getElementById('searchbar');if(sb3)sb3.style.display='none';
   document.getElementById('legend').style.display='none';
   document.getElementById('bottombar').style.display='none';
