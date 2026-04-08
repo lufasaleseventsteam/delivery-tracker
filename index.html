@@ -1361,20 +1361,28 @@ function onSearchKey(e){
 async function fetchSearchResults(q){
   try{
     const center=lastPos||{lat:45.5017,lng:-73.5673};
-    const url='https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=5&countrycodes=ca&bounded=1&viewbox='+(center.lng-0.1)+','+(center.lat+0.1)+','+(center.lng+0.1)+','+(center.lat-0.1);
-    const res=await fetch(url,{headers:{'Accept-Language':'fr,en'}});
+    // Search all of Canada, bias toward current location but don't restrict to it
+    const url='https://nominatim.openstreetmap.org/search?format=json&q='+encodeURIComponent(q)+'&limit=6&countrycodes=ca&lat='+center.lat+'&lon='+center.lng;
+    const res=await fetch(url,{headers:{'Accept-Language':'fr,en','User-Agent':'GiftDropTracker/1.0'}});
     const data=await res.json();
     const el=document.getElementById('search-results');
-    if(!data.length){el.style.display='none';return;}
+    if(!data.length){
+      el.innerHTML='<div class="search-result-item" style="color:#999;font-style:italic;">No results found</div>';
+      el.style.display='block';
+      return;
+    }
     el.innerHTML='';
     data.forEach(r=>{
       const item=document.createElement('div');item.className='search-result-item';
-      item.textContent=r.display_name.substring(0,60)+(r.display_name.length>60?'…':'');
+      item.textContent=r.display_name.substring(0,70)+(r.display_name.length>70?'…':'');
       item.onclick=()=>{map.setView([parseFloat(r.lat),parseFloat(r.lon)],17);closeSearchResults();document.getElementById('search-input').value='';};
       el.appendChild(item);
     });
     el.style.display='block';
-  }catch(e){closeSearchResults();}
+  }catch(e){
+    const el=document.getElementById('search-results');
+    if(el){el.innerHTML='<div class="search-result-item" style="color:#999;font-style:italic;">Search unavailable</div>';el.style.display='block';}
+  }
 }
 function closeSearchResults(){const el=document.getElementById('search-results');if(el)el.style.display='none';}
 function jumpToMyLocation(){
